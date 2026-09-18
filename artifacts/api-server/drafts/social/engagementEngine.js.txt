@@ -1,0 +1,43 @@
+export function generateReply(message, restaurant) {
+  const type = detectMessageType(message);
+
+  if (type === "compliment") {
+    return applyBrandingAndPersonality(
+      "Thank you so much! We appreciate your support ❤️",
+      restaurant
+    );
+  }
+
+  if (type === "complaint") {
+    return applyBrandingAndPersonality(
+      "We’re really sorry to hear this — please message us privately so we can make things right.",
+      restaurant
+    );
+  }
+
+  if (type === "menu_question") {
+    return applyBrandingAndPersonality(
+      "Great question! Here’s more info about that dish:",
+      restaurant
+    );
+  }
+
+  if (type === "delivery_question") {
+    return applyBrandingAndPersonality(
+      "Yes! We’re available on Uber Eats, Deliveroo, and Just Eat.",
+      restaurant
+    );
+  }
+
+  if (type === "booking_question") {
+    return applyBrandingAndPersonality(
+      "We’d love to have you! Would you like to book a table?",
+      restaurant
+    );
+  }
+
+  return applyBrandingAndPersonality(
+    "Thanks for your message! 😊",
+    restaurant
+  );
+}

@@ -1,0 +1,15 @@
+- [Gmail Pub/Sub delivery](gmail-push-delivery.md) — authenticate exact OIDC identity, stage history before cursor advance, and retry every non-permanent message failure.
+- [Monorepo tooling](monorepo-tooling.md) — package helper scoping and Zod version auto-detection can misread workspace configuration.
+- [Provider contract verification](provider-contracts.md) — connector setup examples are not authoritative response schemas; verify identity fields and timing semantics.
+- [Claim invitations](claim-invitations.md) — issuing an invitation is not a pending claim and must not suppress later outreach.
+- [Nearby location policy](nearby-location-policy.md) — no paid lookups on GPS requests or city-centre substitutes for missing restaurant coordinates.
+- [Secret-protected route checks](secret-route-checks.md) — shell checks can verify denial, but stored workflow secrets are not available for authenticated curl tests.
+- [Artifact route registration](artifact-route-registration.md) — exact API paths must be registered or the root SPA can return misleading 200 HTML.
+- [Owner portal security](owner-portal-security.md) — hash bearer tokens, keep reply bodies out of dashboard storage, and accept escalation signals only from verified flows.
+- [Discovery ranking policy](discovery-ranking-policy.md) — AI search scoring is opt-in and bounded; analytics stores aggregates, not raw diner queries.
+- [Analytics aggregation](analytics-aggregation.md) — dashboards compute live totals; scheduled global rows are append-only snapshots, and event metadata excludes sensitive/raw input.
+- [Personalization privacy](personalization-privacy.md) — personalize only for consented pseudonymous IDs; store structured preferences, preserve Premium tiers, and keep private fields out of AI.
+- [Verification and rewards authority](verification-rewards-authority.md) — derive verification and rewards from protected server events; never accept browser-selected status, user IDs, or point amounts.
+- [Stripe environment separation](stripe-environment-separation.md) — keep sandbox prices development-only; production Stripe setup must create and configure its own live price.
+- [GitHub push authentication](github-push-authentication.md) — OAuth may work through the connector while Git CLI stays unauthorized; never force-push as a workaround.
+- [External hosting connectors](external-hosting-connectors.md) — Replit connector clients need direct provider-credential fallbacks on non-Replit hosts.

@@ -1,0 +1,31 @@
+export function applyBranding(post, restaurant) {
+  const branding = restaurant.branding || {};
+
+  // Tone
+  if (branding.tone === "friendly") {
+    post.caption = `Hey! 👋 ${post.caption}`;
+  }
+
+  if (branding.tone === "luxury") {
+    post.caption = `Experience excellence. ${post.caption}`;
+  }
+
+  if (branding.tone === "bold") {
+    post.caption = `🔥 ${post.caption.toUpperCase()} 🔥`;
+  }
+
+  if (branding.tone === "minimal") {
+    post.caption = `${post.caption}`;
+  }
+
+  // Colours
+  post.colours = branding.colourPalette || ["#000000", "#FFFFFF"];
+
+  // Typography
+  post.typography = branding.typography || "Modern Sans";
+
+  // Style
+  post.style = branding.style || "clean";
+
+  return post;
+}

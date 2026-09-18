@@ -1,0 +1,48 @@
+export function getSeasonalContext(restaurant) {
+  const region = restaurant.region || "UK";
+  const month = new Date().getMonth();
+
+  let season = "spring";
+
+  if (region === "UK") {
+    if (month >= 2 && month <= 4) season = "spring";
+    if (month >= 5 && month <= 7) season = "summer";
+    if (month >= 8 && month <= 10) season = "autumn";
+    if (month === 11 || month === 0 || month === 1) season = "winter";
+  }
+
+  if (region === "Australia") {
+    if (month >= 2 && month <= 4) season = "autumn";
+    if (month >= 5 && month <= 7) season = "winter";
+    if (month >= 8 && month <= 10) season = "spring";
+    if (month === 11 || month === 0 || month === 1) season = "summer";
+  }
+
+  return {
+    season,
+    holiday: detectHoliday(),
+    localEvent: detectLocalEvent(region)
+  };
+}
+
+function detectLocalEvent(region) {
+  if (region === "Cardiff") {
+    return "rugby_match_day";
+  }
+
+  return null;
+}
+
+function detectHoliday() {
+  const today = new Date();
+  const month = today.getMonth();
+  const date = today.getDate();
+
+  if (month === 11 && date >= 1) return "christmas";
+  if (month === 0 && date <= 7) return "new_year";
+  if (month === 1 && date === 14) return "valentines";
+  if (month === 3 && date === 1) return "easter";
+  if (month === 9 && date === 31) return "halloween";
+
+  return null;
+}

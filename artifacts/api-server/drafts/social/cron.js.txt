@@ -1,0 +1,25 @@
+import { getScheduledPosts } from "./scheduler.js";
+import { postAutomatically } from "./postingEngine.js";
+import { runAutomationLoop } from "./automationLoop.js";
+import { getAllRestaurants } from "../database/restaurants.js";
+
+export async function runSocialMediaCron() {
+  const posts = await getScheduledPosts();
+
+  for (const post of posts) {
+    const now = Date.now();
+    const scheduled = new Date(post.scheduledFor).getTime();
+
+    if (scheduled <= now) {
+      await postAutomatically(post);
+    }
+  }
+}
+
+export async function runDailyAutomation() {
+  const restaurants = await getAllRestaurants();
+
+  for (const restaurant of restaurants) {
+    await runAutomationLoop(restaurant);
+  }
+}

@@ -1,0 +1,1112 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: restaurants
+    description: Budget-safe restaurant discovery and import operations
+  - name: outreach
+    description: Outreach preferences and automation
+  - name: replies
+    description: Protected inbound outreach reply classification
+  - name: gmail
+    description: Gmail watch renewal and authenticated Pub/Sub push
+paths:
+  /cities:
+    get:
+      operationId: listCities
+      tags: [restaurants]
+      summary: List canonical restaurant cities
+      responses:
+        "200":
+          description: Cities ordered by restaurant count
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CitySummary"
+  /dashboard/health:
+    servers: [{ url: / }]
+    get:
+      operationId: getDashboardHealth
+      tags: [health]
+      security: [{ automationBearer: [] }]
+      summary: Read bounded process-local scraper health without launching scans
+      responses:
+        "200":
+          description: Score is null when there are no samples today in UTC
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DashboardHealth" }
+        "401":
+          description: Invalid automation credential
+  /dashboard/status:
+    servers: [{ url: / }]
+    get:
+      operationId: getDashboardStatus
+      tags: [restaurants]
+      security: [{ automationBearer: [] }]
+      summary: Aggregate current workflow counts from stored outreach states
+      responses:
+        "200":
+          description: Scraped and inserted are milestones and are not counted as stored outreach states
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DashboardStatusCounts" }
+        "401":
+          description: Invalid automation credential
+        "503":
+          description: Counts could not be read
+  /dashboard/errors:
+    servers: [{ url: / }]
+    get:
+      operationId: getDashboardErrors
+      tags: [health]
+      security: [{ automationBearer: [] }]
+      summary: Error category counts from the bounded current-process event buffer
+      responses:
+        "200":
+          description: Counts reset on restart; unrecognised categories appear under unknown
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: { type: integer, minimum: 0 }
+        "401":
+          description: Invalid automation credential
+  /dashboard/summary:
+    servers: [{ url: / }]
+    get:
+      operationId: getDashboardSummary
+      tags: [health]
+      security: [{ automationBearer: [] }]
+      summary: Current status counts, scraper health score, and ten latest events
+      responses:
+        "200":
+          description: Status counts are database totals; health and events are process-local
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [statusCounts, healthScore, recentEvents, healthScope]
+                properties:
+                  statusCounts: { $ref: "#/components/schemas/DashboardStatusCounts" }
+                  healthScore: { type: [integer, "null"], minimum: 0, maximum: 100 }
+                  healthScope: { type: string, enum: [current_process] }
+                  recentEvents:
+                    type: array
+                    maxItems: 10
+                    items:
+                      type: object
+                      required: [time, type, message]
+                      properties:
+                        time: { type: string, format: date-time }
+                        type: { type: string }
+                        message: { type: string }
+                        category: { type: string }
+        "401":
+          description: Invalid automation credential
+        "503":
+          description: Summary could not be read
+  /dashboard/events:
+    servers:
+      - url: /
+    get:
+      operationId: getDashboardEvents
+      tags: [gmail]
+      summary: Latest 200 process-local operational events, oldest first
+      security:
+        - automationBearer: []
+      responses:
+        "200":
+          description: Events reset on server restart and are not shared between instances
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 200
+                items:
+                  type: object
+                  required: [time, type, message]
+                  properties:
+                    time:
+                      type: string
+                      format: date-time
+                    type:
+                      type: string
+                    message:
+                      type: string
+                    category:
+                      type: string
+                      description: Optional error category
+        "401":
+          description: Invalid automation credential
+  /status/gmail-watch-status:
+    servers:
+      - url: /
+    get:
+      operationId: getGmailWatchStatus
+      tags: [gmail]
+      summary: Read saved Gmail Watch status without activating or renewing
+      security:
+        - automationBearer: []
+      responses:
+        "200":
+          description: Saved watch status; active only means expiration is in the future
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [active]
+                properties:
+                  active:
+                    type: boolean
+                  expiresAt:
+                    type: string
+                    format: date-time
+                  hoursRemaining:
+                    type: string
+                    description: Hours until expiration, rounded to one decimal place
+                  lastRenewedAt:
+                    type: [string, "null"]
+                    format: date-time
+                  historyId:
+                    type: string
+                    description: Precision-safe Gmail processing history cursor
+        "401":
+          description: Invalid automation credential
+        "503":
+          description: Watch status could not be read
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /restaurant-import/status:
+    get:
+      operationId: getRestaurantImportStatus
+      tags: [restaurants]
+      summary: Get restaurant import budget status
+      responses:
+        "200":
+          description: Current budget and import status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantImportStatus"
+  /restaurant-import/plan:
+    post:
+      operationId: createRestaurantImportPlan
+      tags: [restaurants]
+      summary: Preview a budget-safe import plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantImportPlanInput"
+      responses:
+        "200":
+          description: Import plan preview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantImportPlan"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /restaurant-import/run:
+    post:
+      operationId: runRestaurantImport
+      tags: [restaurants]
+      summary: Import restaurants within a monthly budget cap
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantImportRunInput"
+      responses:
+        "200":
+          description: Import result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantImportRunResult"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Google Places is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /restaurants:
+    get:
+      operationId: listRestaurants
+      tags: [restaurants]
+      summary: List imported restaurants
+      parameters:
+        - in: query
+          name: city
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Imported restaurants, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Restaurant"
+  /restaurants/nearby:
+    get:
+      operationId: listNearbyRestaurants
+      tags: [restaurants]
+      summary: List stored-coordinate restaurants near a device location
+      description: >
+        Returns only restaurants with coordinates already stored in the
+        database. This endpoint never geocodes, calls a places provider, or
+        fills missing coordinates.
+      parameters:
+        - in: query
+          name: latitude
+          required: true
+          schema:
+            type: number
+            minimum: -90
+            maximum: 90
+        - in: query
+          name: longitude
+          required: true
+          schema:
+            type: number
+            minimum: -180
+            maximum: 180
+        - in: query
+          name: radiusMiles
+          required: false
+          schema:
+            type: number
+            minimum: 1
+            maximum: 25
+            default: 5
+      responses:
+        "200":
+          description: Nearby restaurants sorted by stored-coordinate distance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NearbyRestaurantsResponse"
+        "400":
+          description: Invalid location or radius
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /restaurants/{placeId}/claim:
+    post:
+      operationId: claimRestaurant
+      tags: [restaurants]
+      summary: Claim a free basic restaurant listing
+      description: Requires a valid, unexpired claim link sent to the restaurant's business email. Paid verification and checkout are currently unavailable.
+      parameters:
+        - $ref: "#/components/parameters/PlaceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantClaimInput"
+      responses:
+        "200":
+          description: Free basic claim recorded, or an existing claim retained
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantClaimResult"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Restaurant not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Missing, invalid, expired, or restaurant-mismatched claim link
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Claim links are unavailable because secure server configuration is missing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /outreach/unsubscribe/{token}:
+    post:
+      operationId: unsubscribeRestaurantOutreach
+      tags: [outreach]
+      summary: Suppress all future outreach for a restaurant
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+            minLength: 32
+      responses:
+        "200":
+          description: Suppression recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnsubscribeResult"
+        "404":
+          description: Invalid unsubscribe token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /automation/outreach:
+    post:
+      operationId: runOutreachAutomation
+      tags: [outreach]
+      summary: Run one protected, daily outreach batch (maximum 20 delivery attempts)
+      security:
+        - automationBearer: []
+      responses:
+        "200":
+          description: Automation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutreachRunResult"
+        "401":
+          description: Invalid automation credential
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Sending is disabled or configuration is unsafe
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /replies/incoming:
+    post:
+      operationId: classifyIncomingReply
+      tags: [replies]
+      summary: Classify a supplied outreach reply and update its restaurant
+      description: Classifies only the supplied body. It does not read or modify an email mailbox.
+      security:
+        - automationBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncomingReplyInput"
+      responses:
+        "200":
+          description: Reply classified and recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplyClassification"
+        "400":
+          description: Invalid or oversized request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Invalid automation credential
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Restaurant not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /automation/instantly/replies:
+    post:
+      operationId: pollInstantlyReplies
+      tags: [replies]
+      summary: Reconcile a bounded Instantly received-email inbox pass
+      description: Requires explicit Instantly reply polling enablement, resumes a durable cursor, and accepts only durably mapped campaigns.
+      security:
+        - automationBearer: []
+      responses:
+        "200":
+          description: Polling result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstantlyReplyPollResult"
+        "401":
+          description: Invalid automation credential
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Polling disabled, unavailable, or unsafe
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /admin/renew-gmail-watch:
+    servers:
+      - url: /
+    post:
+      operationId: adminRenewGmailWatch
+      tags: [gmail]
+      summary: Renew Gmail Watch through the protected admin route
+      security:
+        - automationBearer: []
+      responses:
+        "200":
+          description: Watch renewed without resetting the history cursor
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, result]
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+                  result:
+                    $ref: "#/components/schemas/GmailWatch"
+        "401":
+          description: Invalid automation credential
+        "503":
+          description: Gmail watch could not be renewed; retry later
+  /admin/activate-gmail-watch:
+    servers:
+      - url: /
+    post:
+      operationId: adminActivateGmailWatch
+      tags: [gmail]
+      summary: Activate Gmail Watch through the protected admin route
+      security:
+        - automationBearer: []
+      responses:
+        "200":
+          description: Watch activated or renewed without resetting the history cursor
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, result]
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+                  result:
+                    $ref: "#/components/schemas/GmailWatch"
+        "401":
+          description: Invalid automation credential
+        "503":
+          description: Gmail watch could not be activated; retry later
+  /gmail/watch:
+    post:
+      operationId: renewGmailWatch
+      tags: [gmail]
+      summary: Activate or renew the managed Gmail users.watch subscription
+      security:
+        - automationBearer: []
+      responses:
+        "200":
+          description: Current durable Gmail history cursor and watch expiration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GmailWatch"
+        "401":
+          description: Invalid automation credential
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Gmail watch could not be activated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /gmail/push:
+    post:
+      operationId: receiveGmailPush
+      tags: [gmail]
+      summary: Receive an authenticated Google Cloud Pub/Sub Gmail notification
+      security:
+        - pubsubOidc: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PubSubPushEnvelope"
+      responses:
+        "204":
+          description: Authenticated notification was accepted, duplicated, or permanently invalid
+        "401":
+          description: Invalid Pub/Sub OIDC identity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: More than 50 authenticated pushes in 10 seconds per identity and server process; retry after the window
+          content:
+            text/plain:
+              schema:
+                type: string
+        "503":
+          description: Temporary or incomplete processing failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /restaurants/{placeId}/enrich:
+    post:
+      operationId: enrichRestaurant
+      tags: [restaurants]
+      summary: Enrich one restaurant from its public website
+      security:
+        - automationBearer: []
+      parameters:
+        - $ref: "#/components/parameters/PlaceId"
+      responses:
+        "200":
+          description: Enrichment completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantEnrichmentResult"
+        "401":
+          description: Invalid automation credential
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Restaurant not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Restaurant cannot be enriched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  securitySchemes:
+    automationBearer:
+      type: http
+      scheme: bearer
+    pubsubOidc:
+      type: http
+      scheme: bearer
+      bearerFormat: Google OIDC ID token
+  parameters:
+    PlaceId:
+      in: path
+      name: placeId
+      required: true
+      schema:
+        type: string
+        minLength: 1
+  schemas:
+    CitySummary:
+      type: object
+      required: [city, slug, count]
+      properties:
+        city:
+          type: string
+        slug:
+          type: string
+        count:
+          type: integer
+          minimum: 0
+    DashboardStatusCounts:
+      type: array
+      items:
+        type: object
+        required: [status, count]
+        properties:
+          status:
+            type: string
+            description: Workflow label, or sending/out_of_office/unmapped where no workflow label exists
+          count: { type: integer, minimum: 0 }
+    DashboardHealth:
+      type: object
+      required: [recent, score, scope, scoringWindow]
+      properties:
+        score: { type: [integer, "null"], minimum: 0, maximum: 100 }
+        scope: { type: string, enum: [current_process] }
+        scoringWindow: { type: string, enum: [last_10_samples_today_utc] }
+        recent:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            required: [timestamp, city, mapsSuccess, websiteSuccess, proxyUsed, durationMs, errors]
+            properties:
+              timestamp: { type: string, format: date-time }
+              city: { type: string }
+              mapsSuccess: { type: boolean }
+              websiteSuccess: { type: [boolean, "null"] }
+              proxyUsed:
+                type: string
+                enum: [none, residential, datacenter, mixed, unknown, redacted]
+              durationMs: { type: number, minimum: 0 }
+              errors:
+                type: array
+                maxItems: 50
+                items: { type: string }
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+    RestaurantImportPlanInput:
+      type: object
+      properties:
+        cities:
+          type: array
+          items:
+            type: string
+            minLength: 2
+          minItems: 1
+          maxItems: 7
+        perCityLimit:
+          type: number
+          multipleOf: 1
+          minimum: 1
+          maximum: 20
+          default: 10
+        monthlyBudgetCents:
+          type: number
+          multipleOf: 1
+          minimum: 1
+      required:
+        - cities
+        - monthlyBudgetCents
+    RestaurantImportRunInput:
+      allOf:
+        - $ref: "#/components/schemas/RestaurantImportPlanInput"
+        - type: object
+          properties:
+            confirm:
+              type: boolean
+          required:
+            - confirm
+    RestaurantImportCityPlan:
+      type: object
+      properties:
+        city:
+          type: string
+        requested:
+          type: number
+          multipleOf: 1
+        estimatedApiCalls:
+          type: number
+          multipleOf: 1
+        estimatedCostCents:
+          type: number
+          multipleOf: 1
+        status:
+          type: string
+          enum: [ready, capped, skipped]
+      required:
+        - city
+        - requested
+        - estimatedApiCalls
+        - estimatedCostCents
+        - status
+    RestaurantImportPlan:
+      type: object
+      properties:
+        cities:
+          type: array
+          items:
+            $ref: "#/components/schemas/RestaurantImportCityPlan"
+        totalRestaurants:
+          type: number
+          multipleOf: 1
+        totalApiCalls:
+          type: number
+          multipleOf: 1
+        estimatedCostCents:
+          type: number
+          multipleOf: 1
+        monthlyBudgetCents:
+          type: number
+          multipleOf: 1
+        withinBudget:
+          type: boolean
+        note:
+          type: string
+      required:
+        - cities
+        - totalRestaurants
+        - totalApiCalls
+        - estimatedCostCents
+        - monthlyBudgetCents
+        - withinBudget
+        - note
+    RestaurantImportStatus:
+      type: object
+      properties:
+        monthlyBudgetCents:
+          type: number
+          multipleOf: 1
+        spentCents:
+          type: number
+          multipleOf: 1
+        remainingCents:
+          type: number
+          multipleOf: 1
+        callsUsed:
+          type: number
+          multipleOf: 1
+        restaurantsImported:
+          type: number
+          multipleOf: 1
+        lastRunAt:
+          type: ["string", "null"]
+        cities:
+          type: array
+          items:
+            type: string
+      required:
+        - monthlyBudgetCents
+        - spentCents
+        - remainingCents
+        - callsUsed
+        - restaurantsImported
+        - lastRunAt
+        - cities
+    Restaurant:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        location:
+          oneOf:
+            - $ref: "#/components/schemas/GeoLocation"
+            - type: "null"
+        rating:
+          type: ["number", "null"]
+        website:
+          type: ["string", "null"]
+        googleMapsUrl:
+          type: string
+        types:
+          type: array
+          items:
+            type: string
+        outreachStatus:
+          type: string
+        claimed:
+          type: boolean
+      required:
+        - id
+        - name
+        - address
+        - city
+        - location
+        - rating
+        - website
+        - googleMapsUrl
+        - types
+        - outreachStatus
+        - claimed
+    GeoLocation:
+      type: object
+      required: [latitude, longitude]
+      properties:
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+    NearbyRestaurant:
+      allOf:
+        - $ref: "#/components/schemas/Restaurant"
+        - type: object
+          required: [distanceMiles]
+          properties:
+            distanceMiles:
+              type: number
+              minimum: 0
+    NearbyRestaurantsResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/NearbyRestaurant"
+    RestaurantClaimInput:
+      type: object
+      properties:
+        email:
+          type: string
+          pattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+          maxLength: 254
+        claimToken:
+          type: string
+          minLength: 40
+          maxLength: 2048
+      required: [email, claimToken]
+    RestaurantClaimResult:
+      type: object
+      properties:
+        placeId:
+          type: string
+        status:
+          type: string
+          enum: [basic, already_claimed]
+      required: [placeId, status]
+    UnsubscribeResult:
+      type: object
+      properties:
+        suppressed:
+          type: boolean
+      required: [suppressed]
+    IncomingReplyInput:
+      type: object
+      additionalProperties: false
+      properties:
+        placeId:
+          type: string
+          minLength: 1
+          maxLength: 255
+        body:
+          type: string
+          minLength: 1
+          maxLength: 10000
+        from:
+          type: string
+          pattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+          maxLength: 254
+      required: [placeId, body]
+    ReplyClassification:
+      type: object
+      additionalProperties: false
+      properties:
+        category:
+          type: string
+          enum: [unsubscribe, wrong_contact, out_of_office, not_interested, upgrade, interested, question, unknown]
+        confidence:
+          type: string
+          enum: [low, medium, high]
+        matchedPattern:
+          type: ["string", "null"]
+        recommendedAction:
+          type: string
+          enum: [suppress, pause, sales_follow_up, answer_question, manual_review]
+      required: [category, confidence, matchedPattern, recommendedAction]
+    GmailWatch:
+      type: object
+      additionalProperties: false
+      properties:
+        historyId:
+          type: string
+          pattern: "^[1-9][0-9]{0,19}$"
+        expiration:
+          type: string
+          format: date-time
+        topic:
+          type: string
+          pattern: "^projects/[^/]+/topics/[^/]+$"
+      required: [historyId, expiration, topic]
+    PubSubPushEnvelope:
+      type: object
+      additionalProperties: true
+      properties:
+        subscription:
+          type: string
+          maxLength: 255
+        message:
+          type: object
+          additionalProperties: true
+          properties:
+            messageId:
+              type: string
+              minLength: 1
+              maxLength: 255
+            data:
+              type: string
+              minLength: 1
+              maxLength: 8192
+          required: [messageId, data]
+      required: [subscription, message]
+    RestaurantEnrichmentResult:
+      type: object
+      properties:
+        message:
+          type: string
+        placeId:
+          type: string
+        email:
+          type: ["string", "null"]
+        finalUrl:
+          type: ["string", "null"]
+        cuisines:
+          type: array
+          items:
+            type: string
+        dietaryTags:
+          type: array
+          items:
+            type: string
+        confidence:
+          type: string
+          enum: [none, low, medium, high]
+      required:
+        - message
+        - placeId
+        - email
+        - finalUrl
+        - cuisines
+        - dietaryTags
+        - confidence
+    OutreachRunResult:
+      type: object
+      properties:
+        discovered:
+          type: number
+          multipleOf: 1
+          minimum: 0
+        sent:
+          type: number
+          multipleOf: 1
+          minimum: 0
+          maximum: 20
+        reconciled:
+          type: number
+          multipleOf: 1
+          minimum: 0
+          description: Provider-confirmed historic delivery events reconciled during this run.
+        queued:
+          type: number
+          multipleOf: 1
+          minimum: 0
+          maximum: 20
+        skipped:
+          type: number
+          multipleOf: 1
+          minimum: 0
+        failed:
+          type: number
+          multipleOf: 1
+          minimum: 0
+        dailyMaximum:
+          type: integer
+          const: 20
+      required: [discovered, sent, reconciled, queued, skipped, failed, dailyMaximum]
+    InstantlyReplyPollResult:
+      type: object
+      additionalProperties: false
+      properties:
+        processed:
+          type: number
+          multipleOf: 1
+          minimum: 0
+          maximum: 2000
+        skipped:
+          type: number
+          multipleOf: 1
+          minimum: 0
+          maximum: 2000
+        failed:
+          type: number
+          multipleOf: 1
+          minimum: 0
+          maximum: 2000
+      required: [processed, skipped, failed]
+    RestaurantImportRunResult:
+      type: object
+      properties:
+        imported:
+          type: number
+          multipleOf: 1
+        skippedDuplicates:
+          type: number
+          multipleOf: 1
+        apiCalls:
+          type: number
+          multipleOf: 1
+        chargedCents:
+          type: number
+          multipleOf: 1
+        stoppedBecause:
+          type: string
+        restaurants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Restaurant"
+      required:
+        - imported
+        - skippedDuplicates
+        - apiCalls
+        - chargedCents
+        - stoppedBecause
+        - restaurants
+

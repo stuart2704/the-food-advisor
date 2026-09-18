@@ -1,0 +1,17 @@
+// src/social/analyticsEngine.js
+
+export function getAnalytics(restaurant) {
+  return {
+    instagram: { likes: 120, comments: 18 },
+    facebook: { likes: 80, comments: 12 },
+    google: { views: 340 }
+  };
+}
+
+async function fetchInstagramAnalytics(postId) {
+  return {
+    likes: 120,
+    comments: 18,
+    reach: 900
+  };
+}

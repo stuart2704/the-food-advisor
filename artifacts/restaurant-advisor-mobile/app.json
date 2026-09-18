@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "The Food Advisor",
+    "slug": "restaurant-advisor-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/food-advisor-logo.png",
+    "scheme": "restaurant-advisor-mobile",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "The Food Advisor uses your location to show restaurants nearby when you tap Near me."
+      }
+    },
+    "android": {},
+    "splash": {
+      "image": "./assets/food-advisor-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFF8ED"
+    },
+    "web": {
+      "favicon": "./assets/food-advisor-logo.png"
+    },
+    "plugins": ["expo-router", "expo-location"],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

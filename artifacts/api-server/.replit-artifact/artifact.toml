@@ -1,0 +1,31 @@
+kind = "api"
+previewPath = "/api"
+title = "API Server"
+version = "1.0.0"
+id = "3B4_FFSkEVBkAeYMFRJ2e"
+
+[[services]]
+localPort = 8080
+name = "API Server"
+paths = ["/homepage", "/api", "/ai", "/automation", "/auth", "/webhooks/instantly", "/admin/activate-gmail-watch", "/admin/renew-gmail-watch", "/status/gmail-watch-status", "/dashboard/events", "/dashboard/health", "/dashboard/status", "/dashboard/errors", "/dashboard/stats", "/dashboard/restaurants", "/dashboard/outreach", "/dashboard/outreach/summary", "/dashboard/scheduler", "/dashboard/scheduler/history", "/dashboard/ai-usage", "/dashboard/claims", "/dashboard/global", "/dashboard/test-outreach", "/dashboard/lead-qualification", "/dashboard/followups", "/dashboard/escalation", "/dashboard/premium", "/dashboard/search-metrics", "/dashboard/homepage-metrics", "/dashboard/city-metrics", "/dashboard/cuisine-metrics", "/dashboard/directory-metrics", "/dashboard/profile-metrics", "/dashboard/claim-metrics", "/dashboard/claim-page-metrics", "/dashboard/analytics", "/dashboard/global-metrics", "/dashboard/ranking", "/dashboard/summary"]
+
+[services.development]
+run = "pnpm --filter api-server run dev"
+
+[services.production]
+
+[services.production.build]
+args = ["pnpm", "--filter", "api-server", "run", "build"]
+
+[services.production.build.env]
+NODE_ENV = "production"
+
+[services.production.run]
+args = ["node", "--enable-source-maps", "artifacts/api-server/dist/index.mjs"]
+
+[services.production.run.env]
+PORT = "8080"
+NODE_ENV = "production"
+
+[services.production.health.startup]
+path = "/api/healthz"

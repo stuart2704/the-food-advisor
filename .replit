@@ -1,0 +1,40 @@
+modules = ["nodejs-24", "postgresql-16", "python-base-3.13"]
+
+[deployment]
+router = "application"
+deploymentTarget = "autoscale"
+
+[deployment.postBuild]
+args = ["pnpm", "store", "prune"]
+env = { "CI" = "true" }
+
+[workflows]
+runButton = "Project"
+
+[agent]
+stack = "PNPM_WORKSPACE"
+expertMode = true
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+PUBLIC_APP_URL = "https://thefoodadvisor.co.uk"
+GMAIL_PUBSUB_SUBSCRIPTION = "projects/the-food-advisor/subscriptions/gmail-replies-sub-2"
+GMAIL_PUBSUB_TOPIC = "projects/the-food-advisor/topics/gmail-replies"
+GMAIL_PUBSUB_PUSH_SERVICE_ACCOUNT = "gmail-listener@the-food-advisor.iam.gserviceaccount.com"
+ADMIN_EMAIL = "stuart@thefoodadvisor.co.uk"
+DAILY_OUTREACH_SCHEDULER_ENABLED = "true"
+INSTANTLY_CAMPAIGN_ACTIVATION_ENABLED = "true"
+INSTANTLY_CAMPAIGN_CREATION_ENABLED = "true"
+INSTANTLY_EACCOUNT = "stuart.cornelius@emailfoodadvisor.com"
+OUTREACH_ENABLED = "true"
+
+[userenv.development]
+STRIPE_PREMIUM_PRICE_ID = "price_1UGcbNLlQZ1xACZup6fdLSok"
