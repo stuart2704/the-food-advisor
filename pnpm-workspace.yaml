@@ -1,5 +1,17 @@
+
 packages:
-  - ./*
+  - artifacts/*
+  - lib/*
+  - lib/integrations/*
+  - scripts
+  - api-server
+  - restaurant-advisor-web
+  - restaurant-advisor-mobile
+  - mockup-sandbox
+  - food-advisor-project-deck
+  - src
+  - drafts
+
 
 
 autoInstallPeers: false
