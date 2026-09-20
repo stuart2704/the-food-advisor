@@ -177,5 +177,8 @@ app.use(
     next(error);
   },
 );
+app.get("/", (req, res) => {
+  res.status(200).send("API is running");
+});
 
 export default app;
