@@ -8,7 +8,11 @@ export default defineConfig({
   },
   preview: {
     host: true,
-    allowedHosts: ["the-food-advisor-frontend.onrender.com"]
+    allowedHosts: [
+      "the-food-advisor-frontend.onrender.com",
+      "www.thefoodadvisor.co.uk",
+      "thefoodadvisor.co.uk"
+    ]
   },
   build: {
     outDir: "dist"
