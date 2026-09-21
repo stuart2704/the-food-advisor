@@ -1,5 +1,7 @@
 import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 function formatPrice(level: string | null) {
   if (level === null) return "Not available";
@@ -23,6 +25,7 @@ export default function RestaurantDetail() {
   const [hours, setHours] = useState<string[]>([]);
   const [openNow, setOpenNow] = useState<boolean | null>(null);
   const [priceLevel, setPriceLevel] = useState<string | null>(null);
+  const [gallery, setGallery] = useState<string[]>([]);
   const [email, setEmail] = useState("");
   const [claimSubmitting, setClaimSubmitting] = useState(false);
   const claimToken =
@@ -92,6 +95,20 @@ export default function RestaurantDetail() {
 
     if (id) {
       fetch(
+        `https://the-food-advisor-api.onrender.com/api/photos/${encodeURIComponent(id)}`
+      )
+        .then(res => {
+          if (!res.ok) {
+            throw new Error("Restaurant photos are unavailable.");
+          }
+          return res.json();
+        })
+        .then(data => {
+          setGallery(Array.isArray(data.photos) ? data.photos : []);
+        })
+        .catch(() => setGallery([]));
+
+      fetch(
         `https://the-food-advisor-api.onrender.com/api/reviews/google/${encodeURIComponent(id)}`
       )
         .then(res => {
@@ -146,7 +163,10 @@ export default function RestaurantDetail() {
   return (
     <div className="section" style={{ maxWidth: "900px" }}>
       <img
-        src={`https://source.unsplash.com/900x500/?restaurant,${restaurant.city}`}
+        src={
+          gallery[0] ||
+          `https://source.unsplash.com/900x500/?restaurant,${restaurant.city}`
+        }
         alt={restaurant.name}
         style={{
           width: "100%",
@@ -156,6 +176,27 @@ export default function RestaurantDetail() {
           marginBottom: "24px"
         }}
       />
+
+      {gallery.length > 0 && (
+        <div style={{ marginTop: "40px" }}>
+          <Swiper spaceBetween={20} slidesPerView={1.2}>
+            {gallery.map((url, i) => (
+              <SwiperSlide key={i}>
+                <img
+                  src={url}
+                  alt={`Photo ${i}`}
+                  style={{
+                    width: "100%",
+                    height: "300px",
+                    objectFit: "cover",
+                    borderRadius: "16px"
+                  }}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      )}
 
       <h1 style={{ fontSize: "2.2rem", marginBottom: "10px" }}>
         {restaurant.name}
