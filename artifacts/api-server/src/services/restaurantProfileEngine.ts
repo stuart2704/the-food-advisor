@@ -20,6 +20,8 @@ export interface RestaurantProfile {
   address: string;
   website: string | null;
   deliveryUrl: string | null;
+  bookingUrl: string | null;
+  bookingProvider: string | null;
   googleMapsUrl: string;
   rating: number | null;
   lat: number | null;
@@ -101,6 +103,8 @@ export async function getRestaurantProfile(
     address: restaurant.address,
     website: restaurant.website,
     deliveryUrl: restaurant.deliveryUrl,
+    bookingUrl: null,
+    bookingProvider: null,
     googleMapsUrl: restaurant.googleMapsUrl,
     rating: restaurant.rating,
     lat: restaurant.latitude,
