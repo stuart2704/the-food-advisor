@@ -4,6 +4,7 @@ import RestaurantDetail from "./components/RestaurantDetail";
 import OwnerDashboard from "./components/OwnerDashboard";
 import Trending from "./components/Trending";
 import Home from "./components/Home";
+import CityGuide from "./components/CityGuide";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
 
         <Route path="/restaurant/:id" element={<RestaurantDetail />} />
         <Route path="/trending" element={<Trending />} />
+        <Route path="/city-guide" element={<CityGuide />} />
         <Route path="/owner" element={<OwnerDashboard />} />
       </Routes>
     </BrowserRouter>

@@ -92,6 +92,14 @@ export interface RestaurantProfile {
     description: string;
     reason: string;
   }>;
+  chef: {
+    name: string | null;
+    bio: string | null;
+    signatureDishes: string[];
+    awards: string[];
+    philosophy: string | null;
+    photo: string | null;
+  };
   googleMapsUrl: string;
   rating: number | null;
   lat: number | null;
@@ -180,6 +188,14 @@ export async function getRestaurantProfile(
     badges: deriveBadges(restaurant),
     collections: [],
     bestDishes: [],
+    chef: {
+      name: null,
+      bio: null,
+      signatureDishes: [],
+      awards: [],
+      philosophy: null,
+      photo: null,
+    },
     googleMapsUrl: restaurant.googleMapsUrl,
     rating: restaurant.rating,
     lat: restaurant.latitude,

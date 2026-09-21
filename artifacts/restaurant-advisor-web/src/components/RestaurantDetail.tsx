@@ -485,6 +485,77 @@ export default function RestaurantDetail() {
         </div>
       )}
 
+      {restaurant.chef &&
+        (restaurant.chef.name ||
+          restaurant.chef.bio ||
+          restaurant.chef.signatureDishes?.length > 0 ||
+          restaurant.chef.awards?.length > 0 ||
+          restaurant.chef.philosophy ||
+          restaurant.chef.photo) && (
+          <div
+            style={{
+              marginTop: "40px",
+              background: "#fff",
+              padding: "24px",
+              borderRadius: "16px"
+            }}
+          >
+            <h2>Chef Profile</h2>
+
+            {restaurant.chef.photo && (
+              <img
+                src={restaurant.chef.photo}
+                alt={
+                  restaurant.chef.name
+                    ? `${restaurant.chef.name}, chef at ${restaurant.name}`
+                    : `Chef at ${restaurant.name}`
+                }
+                style={{
+                  width: "160px",
+                  height: "160px",
+                  objectFit: "cover",
+                  borderRadius: "16px",
+                  marginTop: "16px"
+                }}
+              />
+            )}
+
+            {restaurant.chef.name && (
+              <h3 style={{ marginTop: "16px" }}>{restaurant.chef.name}</h3>
+            )}
+            {restaurant.chef.bio && <p>{restaurant.chef.bio}</p>}
+
+            {restaurant.chef.signatureDishes?.length > 0 && (
+              <>
+                <h4>Signature Dishes</h4>
+                <ul>
+                  {restaurant.chef.signatureDishes.map((dish: string) => (
+                    <li key={dish}>{dish}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {restaurant.chef.awards?.length > 0 && (
+              <>
+                <h4>Awards</h4>
+                <ul>
+                  {restaurant.chef.awards.map((award: string) => (
+                    <li key={award}>{award}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {restaurant.chef.philosophy && (
+              <>
+                <h4>Philosophy</h4>
+                <p>{restaurant.chef.philosophy}</p>
+              </>
+            )}
+          </div>
+        )}
+
       <div style={{ marginTop: "40px", opacity: 0.7 }}>
         <em>More features coming soon…</em>
       </div>

@@ -46,6 +46,9 @@ export default function NavBar() {
         <Link to="/trending" style={{ textDecoration: "none", color: "#333" }}>
           Trending
         </Link>
+        <Link to="/city-guide" style={{ textDecoration: "none", color: "#333" }}>
+          City Food Guide
+        </Link>
         <a href="/restaurants" style={{ textDecoration: "none", color: "#333" }}>
           Restaurants
         </a>
