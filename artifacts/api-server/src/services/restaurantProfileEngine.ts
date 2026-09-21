@@ -87,6 +87,11 @@ export interface RestaurantProfile {
     city: string;
     restaurants: string[];
   }>;
+  bestDishes: Array<{
+    name: string;
+    description: string;
+    reason: string;
+  }>;
   googleMapsUrl: string;
   rating: number | null;
   lat: number | null;
@@ -174,6 +179,7 @@ export async function getRestaurantProfile(
     events: [],
     badges: deriveBadges(restaurant),
     collections: [],
+    bestDishes: [],
     googleMapsUrl: restaurant.googleMapsUrl,
     rating: restaurant.rating,
     lat: restaurant.latitude,

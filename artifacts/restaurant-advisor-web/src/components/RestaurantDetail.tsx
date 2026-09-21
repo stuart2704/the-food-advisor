@@ -445,6 +445,46 @@ export default function RestaurantDetail() {
         </div>
       )}
 
+      {restaurant.bestDishes && restaurant.bestDishes.length > 0 && (
+        <div
+          style={{
+            marginTop: "40px",
+            background: "#fff",
+            padding: "24px",
+            borderRadius: "16px"
+          }}
+        >
+          <h2>Best Dishes</h2>
+
+          {restaurant.bestDishes.map((dish: {
+            name: string;
+            description: string;
+            reason: string;
+          }) => (
+            <div
+              key={dish.name}
+              style={{
+                marginBottom: "20px",
+                paddingBottom: "16px",
+                borderBottom: "1px solid #eee"
+              }}
+            >
+              <div style={{ fontWeight: 600, marginBottom: "6px" }}>
+                {dish.name}
+              </div>
+
+              <div style={{ opacity: 0.8, marginBottom: "8px" }}>
+                {dish.description}
+              </div>
+
+              <div style={{ fontSize: "0.9rem", opacity: 0.6 }}>
+                {dish.reason}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div style={{ marginTop: "40px", opacity: 0.7 }}>
         <em>More features coming soon…</em>
       </div>
