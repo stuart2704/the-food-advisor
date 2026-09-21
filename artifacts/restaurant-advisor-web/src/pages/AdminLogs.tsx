@@ -55,45 +55,110 @@ export default function AdminLogs() {
         minHeight: "100vh",
         background: "#0f0f0f",
         color: "#e6e6e6",
-        padding: "32px 24px"
+        padding: "24px"
       }}
     >
-      <div style={{ width: "min(1100px, 100%)", margin: "0 auto" }}>
-        <header
+      <div
+        className="admin-logs-layout"
+        style={{
+          width: "min(1280px, 100%)",
+          margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: "180px minmax(0, 1fr)",
+          gap: "28px"
+        }}
+      >
+        <aside
+          className="admin-system-navigation"
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "16px",
-            marginBottom: "24px"
+            position: "sticky",
+            top: "24px",
+            alignSelf: "start",
+            padding: "20px 14px",
+            border: "1px solid #292929",
+            borderRadius: "12px",
+            background: "#151515"
           }}
         >
-          <div>
-            <p style={{ color: "#ff8b47", fontWeight: 700, margin: 0 }}>
-              The Food Advisor Admin
-            </p>
-            <h1 style={{ margin: "6px 0 0" }}>Operational Logs</h1>
-          </div>
-          <button
-            type="button"
-            onClick={() => void logout()}
+          <div
             style={{
-              padding: "9px 14px",
-              border: "1px solid #444",
-              borderRadius: "8px",
-              background: "#222",
-              color: "#eee",
-              cursor: "pointer"
+              margin: "0 8px 12px",
+              color: "#ff8b47",
+              fontSize: "0.78rem",
+              fontWeight: 800,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase"
             }}
           >
-            Sign out
-          </button>
-        </header>
-        <p style={{ color: "#aaa", marginBottom: "16px" }}>
-          Sanitized process-local events. The feed refreshes every three seconds
-          and resets when the API process restarts.
-        </p>
-        <LiveEvents />
+            System
+          </div>
+          <nav aria-label="System administration">
+            {["Logs", "Queue", "Engines", "Health"].map((item) => {
+              const active = item === "Logs";
+              return (
+                <button
+                  key={item}
+                  type="button"
+                  disabled={!active}
+                  aria-current={active ? "page" : undefined}
+                  title={active ? undefined : `${item} is not available yet`}
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    border: 0,
+                    borderRadius: "8px",
+                    background: active ? "#d94800" : "transparent",
+                    color: active ? "#fff" : "#777",
+                    textAlign: "left",
+                    font: "inherit",
+                    fontWeight: active ? 700 : 500,
+                    cursor: active ? "default" : "not-allowed"
+                  }}
+                >
+                  {item}
+                </button>
+              );
+            })}
+          </nav>
+        </aside>
+
+        <section style={{ minWidth: 0 }}>
+          <header
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "16px",
+              marginBottom: "24px"
+            }}
+          >
+            <div>
+              <p style={{ color: "#ff8b47", fontWeight: 700, margin: 0 }}>
+                The Food Advisor Admin
+              </p>
+              <h1 style={{ margin: "6px 0 0" }}>Operational Logs</h1>
+            </div>
+            <button
+              type="button"
+              onClick={() => void logout()}
+              style={{
+                padding: "9px 14px",
+                border: "1px solid #444",
+                borderRadius: "8px",
+                background: "#222",
+                color: "#eee",
+                cursor: "pointer"
+              }}
+            >
+              Sign out
+            </button>
+          </header>
+          <p style={{ color: "#aaa", marginBottom: "16px" }}>
+            Sanitized process-local events. The feed refreshes every three seconds
+            and resets when the API process restarts.
+          </p>
+          <LiveEvents />
+        </section>
       </div>
     </main>
   );
