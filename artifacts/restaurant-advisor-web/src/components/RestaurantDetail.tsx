@@ -1,7 +1,5 @@
 import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 
 function formatPrice(level: string | null) {
   if (level === null) return "Not available";
@@ -72,12 +70,19 @@ export default function RestaurantDetail() {
   }
 
   useEffect(() => {
-    fetch("/api/restaurants")
-      .then(res => res.json())
-      .then(data => {
-        const match = data.find((r: any) => r.id === id);
+    if (!id) return;
+
+    fetch(`/api/restaurant/${encodeURIComponent(id)}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Restaurant details are unavailable.");
+        }
+        return res.json();
+      })
+      .then(payload => {
+        const match = payload.data ?? payload;
         setRestaurant(match);
-        if (match) {
+        if (match?.id) {
           fetch("/ai/describe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -91,12 +96,12 @@ export default function RestaurantDetail() {
             .then(res => res.json())
             .then(data => setAiDescription(data.description));
         }
-      });
+      })
+      .catch(() => setRestaurant(null));
 
-    if (id) {
-      fetch(
-        `/api/photos/${encodeURIComponent(id)}`
-      )
+    fetch(
+      `/api/photos/${encodeURIComponent(id)}`
+    )
         .then(res => {
           if (!res.ok) {
             throw new Error("Restaurant photos are unavailable.");
@@ -153,7 +158,6 @@ export default function RestaurantDetail() {
           setOpenNow(null);
           setPriceLevel(null);
         });
-    }
   }, [id]);
 
   useEffect(() => {
@@ -221,29 +225,60 @@ export default function RestaurantDetail() {
       />
 
       {gallery.length > 0 && (
-        <div style={{ marginTop: "40px" }}>
-          <Swiper spaceBetween={20} slidesPerView={1.2}>
-            {gallery.map((url, i) => (
-              <SwiperSlide key={i}>
-                <img
-                  src={url}
-                  alt={`Photo ${i}`}
-                  style={{
-                    width: "100%",
-                    height: "300px",
-                    objectFit: "cover",
-                    borderRadius: "16px"
-                  }}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+        <div
+          aria-label={`${restaurant.name} photo gallery`}
+          style={{
+            marginTop: "40px",
+            display: "flex",
+            gap: "20px",
+            overflowX: "auto",
+            scrollSnapType: "x mandatory",
+            paddingBottom: "8px"
+          }}
+        >
+          {gallery.map((url, i) => (
+            <img
+              key={url}
+              src={url}
+              alt={`${restaurant.name} photo ${i + 1}`}
+              style={{
+                width: "min(80vw, 640px)",
+                height: "300px",
+                flex: "0 0 auto",
+                objectFit: "cover",
+                borderRadius: "16px",
+                scrollSnapAlign: "start"
+              }}
+            />
+          ))}
         </div>
       )}
 
       <h1 style={{ fontSize: "2.2rem", marginBottom: "10px" }}>
         {restaurant.name}
       </h1>
+
+      {restaurant.badges && restaurant.badges.length > 0 && (
+        <div style={{ marginTop: "20px" }}>
+          {restaurant.badges.map((badge: string) => (
+            <span
+              key={badge}
+              style={{
+                display: "inline-block",
+                padding: "6px 12px",
+                background: "#d94800",
+                color: "#fff",
+                borderRadius: "8px",
+                marginRight: "8px",
+                marginBottom: "8px",
+                fontWeight: 600
+              }}
+            >
+              {badge}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div style={{ fontSize: "1.1rem", opacity: 0.8, marginBottom: "20px" }}>
         {restaurant.address}, {restaurant.city}
