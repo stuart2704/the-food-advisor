@@ -17,6 +17,8 @@ export default function RestaurantCard({ name, city, cuisine, image }: Props) {
           objectFit: "cover",
           borderRadius: "8px",
           marginBottom: "12px",
+          boxShadow: "none",
+          border: "none"
         }}
       />
       <div style={{ fontWeight: 600, marginBottom: 4 }}>{name}</div>

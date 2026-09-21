@@ -1,12 +1,12 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f8f9fa;
+  background: #faf7f2; /* warm, premium off‑white */
   color: #1a1a1a;
 }
 
 .hero {
-  background: linear-gradient(135deg, #ff7a00, #ff9a3c);
+  background: linear-gradient(135deg, #d94800, #ff6a00);
   color: white;
   padding: 80px 24px;
   text-align: center;
@@ -40,5 +40,5 @@ body {
   background: white;
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: none;
 }
