@@ -4,7 +4,6 @@ export type Toast = {
   id: string;
   title?: string;
   description?: string;
-  action?: React.ReactNode;
   duration?: number;
 };
 
@@ -33,10 +32,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  return (
-    <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
-      {children}
-    </ToastContext.Provider>
+  return React.createElement(
+    ToastContext.Provider,
+    { value: { toasts, addToast, removeToast } },
+    children
   );
 }
 
