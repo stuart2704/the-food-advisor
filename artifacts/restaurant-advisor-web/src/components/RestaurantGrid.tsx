@@ -42,7 +42,7 @@ export default function RestaurantGrid() {
   const [locationError, setLocationError] = useState("");
 
   useEffect(() => {
-    fetch("https://the-food-advisor-api.onrender.com/api/restaurants")
+    fetch("/api/restaurants")
       .then(res => res.json())
       .then(data => {
         setRestaurants(data);
@@ -77,7 +77,7 @@ export default function RestaurantGrid() {
         const restaurant: any = unchecked[nextIndex++];
         try {
           const response = await fetch(
-            `https://the-food-advisor-api.onrender.com/api/open/${encodeURIComponent(restaurant.id)}`
+            `/api/open/${encodeURIComponent(restaurant.id)}`
           );
           if (!response.ok) {
             throw new Error("Opening status is unavailable.");

@@ -34,7 +34,7 @@ export default function RestaurantCard({
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`https://the-food-advisor-api.onrender.com/api/photo/${id}`)
+    fetch(`/api/photo/${encodeURIComponent(id)}`)
       .then(res => res.json())
       .then(data => setPhotoUrl(data.url));
   }, [id]);

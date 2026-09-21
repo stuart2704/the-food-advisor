@@ -46,7 +46,7 @@ export default function RestaurantDetail() {
     setClaimSubmitting(true);
     try {
       const response = await fetch(
-        `https://the-food-advisor-api.onrender.com/api/restaurants/${encodeURIComponent(restaurant.id)}/claim`,
+        `/api/restaurants/${encodeURIComponent(restaurant.id)}/claim`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -72,13 +72,13 @@ export default function RestaurantDetail() {
   }
 
   useEffect(() => {
-    fetch("https://the-food-advisor-api.onrender.com/api/restaurants")
+    fetch("/api/restaurants")
       .then(res => res.json())
       .then(data => {
         const match = data.find((r: any) => r.id === id);
         setRestaurant(match);
         if (match) {
-          fetch("https://the-food-advisor-api.onrender.com/ai/describe", {
+          fetch("/ai/describe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -95,7 +95,7 @@ export default function RestaurantDetail() {
 
     if (id) {
       fetch(
-        `https://the-food-advisor-api.onrender.com/api/photos/${encodeURIComponent(id)}`
+        `/api/photos/${encodeURIComponent(id)}`
       )
         .then(res => {
           if (!res.ok) {
@@ -109,7 +109,7 @@ export default function RestaurantDetail() {
         .catch(() => setGallery([]));
 
       fetch(
-        `https://the-food-advisor-api.onrender.com/api/reviews/google/${encodeURIComponent(id)}`
+        `/api/reviews/google/${encodeURIComponent(id)}`
       )
         .then(res => {
           if (!res.ok) {
@@ -120,7 +120,7 @@ export default function RestaurantDetail() {
         .then(data => {
           setReviews(Array.isArray(data.reviews) ? data.reviews : []);
           return fetch(
-            `https://the-food-advisor-api.onrender.com/api/hours/${encodeURIComponent(id)}`
+            `/api/hours/${encodeURIComponent(id)}`
           );
         })
         .then(res => {
@@ -133,7 +133,7 @@ export default function RestaurantDetail() {
           setHours(Array.isArray(data.hours) ? data.hours : []);
           setOpenNow(typeof data.openNow === "boolean" ? data.openNow : null);
           return fetch(
-            `https://the-food-advisor-api.onrender.com/api/price/${encodeURIComponent(id)}`
+            `/api/price/${encodeURIComponent(id)}`
           );
         })
         .then(res => {
@@ -155,6 +155,49 @@ export default function RestaurantDetail() {
         });
     }
   }, [id]);
+
+  useEffect(() => {
+    if (!restaurant) return;
+
+    try {
+      const stored = JSON.parse(
+        window.localStorage.getItem("recentlyViewed") || "[]"
+      ) as unknown;
+      const viewed = Array.isArray(stored)
+        ? stored.filter((item): item is {
+            id: string;
+            name: string;
+            city: string;
+            image: string;
+          } => {
+            if (!item || typeof item !== "object") return false;
+            const value = item as Record<string, unknown>;
+            return (
+              typeof value.id === "string" &&
+              typeof value.name === "string" &&
+              typeof value.city === "string" &&
+              typeof value.image === "string"
+            );
+          })
+        : [];
+      const updated = [
+        {
+          id: String(restaurant.id),
+          name: String(restaurant.name),
+          city: String(restaurant.city),
+          image: gallery[0] || ""
+        },
+        ...viewed.filter((item) => item.id !== restaurant.id)
+      ];
+
+      window.localStorage.setItem(
+        "recentlyViewed",
+        JSON.stringify(updated.slice(0, 10))
+      );
+    } catch {
+      window.localStorage.removeItem("recentlyViewed");
+    }
+  }, [restaurant, gallery]);
 
   if (!restaurant) {
     return <div className="section">Loading…</div>;
