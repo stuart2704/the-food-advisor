@@ -379,7 +379,7 @@ export default function RestaurantDetail() {
             borderRadius: "16px"
           }}
         >
-          <h2>Special Offers</h2>
+          <h2>Deals & Offers</h2>
 
           {restaurant.offers.map((offer: {
             title: string;
@@ -404,7 +404,7 @@ export default function RestaurantDetail() {
               </div>
 
               <div style={{ fontSize: "0.9rem", opacity: 0.6 }}>
-                {offer.startDate} → {offer.endDate}
+                Valid: {offer.startDate} → {offer.endDate}
               </div>
             </div>
           ))}
