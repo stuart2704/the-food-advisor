@@ -21,11 +21,11 @@ export default function Navbar() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        background: "#fff",
+        background: "#d94800",
         position: "sticky",
         top: 0,
         zIndex: 999,
-        borderBottom: "1px solid #eee",
+        borderBottom: "1px solid #b83d00",
         boxShadow: "0 2px 8px rgba(0,0,0,0.06)"
       }}
     >
@@ -52,7 +52,7 @@ export default function Navbar() {
           style={{
             fontSize: "1.4rem",
             fontWeight: 700,
-            color: "#d94800"
+            color: "#fff"
           }}
         >
           The Food Advisor
@@ -119,15 +119,18 @@ export default function Navbar() {
           }
 
           .nav-link {
-            color: #333;
-            font-weight: 500;
+            color: #fff;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 6px;
             text-decoration: none;
-            transition: color 0.2s ease;
+            transition: background 0.2s ease, color 0.2s ease;
           }
 
           .nav-link:hover,
           .nav-link:focus-visible {
-            color: #d94800;
+            color: #fff;
+            background: rgba(255,255,255,0.2);
           }
 
           .hamburger {
@@ -135,7 +138,7 @@ export default function Navbar() {
             padding: 6px 10px;
             border: 0;
             background: transparent;
-            color: #333;
+            color: #fff;
             cursor: pointer;
             font-size: 1.8rem;
             line-height: 1;
@@ -156,6 +159,16 @@ export default function Navbar() {
 
             .mobile-menu {
               display: flex;
+            }
+
+            .mobile-menu .nav-link {
+              color: #333;
+            }
+
+            .mobile-menu .nav-link:hover,
+            .mobile-menu .nav-link:focus-visible {
+              color: #d94800;
+              background: #f7f7f7;
             }
           }
         `}
