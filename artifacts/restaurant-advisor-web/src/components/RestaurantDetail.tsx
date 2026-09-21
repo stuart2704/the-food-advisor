@@ -259,6 +259,27 @@ export default function RestaurantDetail() {
         </a>
       </div>
 
+      {restaurant.bookingUrl && (
+        <div style={{ marginTop: "20px" }}>
+          <a
+            href={restaurant.bookingUrl}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              display: "inline-block",
+              padding: "14px 24px",
+              background: "#d94800",
+              color: "#fff",
+              borderRadius: "12px",
+              fontWeight: 600,
+              textDecoration: "none"
+            }}
+          >
+            Book a Table
+          </a>
+        </div>
+      )}
+
       <div style={{ marginTop: "40px", opacity: 0.7 }}>
         <em>More features coming soon…</em>
       </div>
