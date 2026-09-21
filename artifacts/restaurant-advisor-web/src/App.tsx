@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import NavBar from "./components/NavBar";
+import Navbar from "./components/Navbar";
 import RestaurantDetail from "./components/RestaurantDetail";
 import OwnerDashboard from "./components/OwnerDashboard";
 import Trending from "./components/Trending";
@@ -9,7 +9,7 @@ import CityGuide from "./components/CityGuide";
 export default function App() {
   return (
     <BrowserRouter>
-      <NavBar />
+      <Navbar />
 
       <Routes>
         <Route path="/" element={<Home />} />
