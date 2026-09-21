@@ -141,6 +141,7 @@ export default function RestaurantGrid() {
             city={r.city}
             cuisine={r.types?.[0] || "Restaurant"}
             image={`https://source.unsplash.com/600x400/?restaurant,${r.city}`}
+            openStatus={openStatus}
           />
         ))}
       </div>
