@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@300;400;500;600;700&display=swap');
-@import '@clerk/themes/shadcn.css';
-@import 'tw-animate-css';
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@300;400;500;600;700&display=swap");
+@import "@clerk/themes/shadcn.css";
+@import "tw-animate-css";
 
 @tailwind base;
 @tailwind components;
-@tailwind utilities';
+@tailwind utilities;
 
 /* ----------------------------------------
    CSS VARIABLES — LIGHT MODE
@@ -61,8 +61,8 @@
   --sidebar-accent-foreground: 20 14% 15%;
   --sidebar-ring: 13 65% 52%;
 
-  --app-font-sans: 'DM Sans', sans-serif;
-  --app-font-serif: 'Fraunces', serif;
+  --app-font-sans: "DM Sans", sans-serif;
+  --app-font-serif: "Fraunces", serif;
   --app-font-mono: Menlo, monospace;
 
   --radius: 0.75rem;
