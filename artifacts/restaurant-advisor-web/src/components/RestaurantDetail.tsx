@@ -1,10 +1,55 @@
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 export default function RestaurantDetail() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const [restaurant, setRestaurant] = useState<any>(null);
   const [aiDescription, setAiDescription] = useState("");
+  const [email, setEmail] = useState("");
+  const [claimSubmitting, setClaimSubmitting] = useState(false);
+  const claimToken =
+    searchParams.get("claimToken") || searchParams.get("token") || "";
+
+  async function handleClaim() {
+    if (!restaurant || !email.trim()) {
+      window.alert("Enter your business email.");
+      return;
+    }
+    if (!claimToken) {
+      window.alert(
+        "A secure claim link is required. Please use the link sent to the restaurant's business email."
+      );
+      return;
+    }
+
+    setClaimSubmitting(true);
+    try {
+      const response = await fetch(
+        `https://the-food-advisor-api.onrender.com/api/restaurants/${encodeURIComponent(restaurant.id)}/claim`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: email.trim(),
+            claimToken
+          })
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "The claim could not be submitted.");
+      }
+      setRestaurant((current: any) => ({ ...current, claimed: true }));
+      window.alert("Your restaurant claim has been verified.");
+    } catch (error) {
+      window.alert(
+        error instanceof Error ? error.message : "The claim could not be submitted."
+      );
+    } finally {
+      setClaimSubmitting(false);
+    }
+  }
 
   useEffect(() => {
     fetch("https://the-food-advisor-api.onrender.com/api/restaurants")
@@ -90,6 +135,50 @@ export default function RestaurantDetail() {
         >
           <h2 style={{ marginBottom: "12px" }}>AI‑Generated Description</h2>
           {aiDescription}
+        </div>
+      )}
+
+      {restaurant.claimed === false && (
+        <div
+          style={{
+            marginTop: "40px",
+            padding: "24px",
+            background: "#fff",
+            borderRadius: "16px"
+          }}
+        >
+          <h2>Claim this restaurant</h2>
+          <p>If you are the owner, you can claim this listing.</p>
+
+          <input
+            type="email"
+            placeholder="Your business email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              padding: "12px",
+              width: "100%",
+              marginBottom: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc"
+            }}
+          />
+
+          <button
+            onClick={handleClaim}
+            disabled={claimSubmitting}
+            style={{
+              padding: "12px 20px",
+              background: "#d94800",
+              color: "#fff",
+              borderRadius: "8px",
+              border: "none",
+              cursor: claimSubmitting ? "wait" : "pointer",
+              opacity: claimSubmitting ? 0.7 : 1
+            }}
+          >
+            {claimSubmitting ? "Submitting…" : "Submit Claim"}
+          </button>
         </div>
       )}
     </div>
