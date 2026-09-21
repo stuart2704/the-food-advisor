@@ -1,15 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@300;400;500;600;700&display=swap');
+@import '@clerk/themes/shadcn.css';
+@import 'tw-animate-css';
+
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
-
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@300;400;500;600;700&display=swap');
-
-/* Clerk theme (valid CSS import) */
-@import '@clerk/themes/shadcn.css';
-
-/* Animate CSS */
-@import 'tw-animate-css';
+@tailwind utilities';
 
 /* ----------------------------------------
    CSS VARIABLES — LIGHT MODE
@@ -71,18 +66,6 @@
   --app-font-mono: Menlo, monospace;
 
   --radius: 0.75rem;
-
-  --shadow-2xs: 0px 2px 0px 0px rgba(45, 36, 34, 0.05);
-  --shadow-xs: 0px 2px 4px 0px rgba(45, 36, 34, 0.05);
-  --shadow-sm: 0px 4px 8px -1px rgba(45, 36, 34, 0.08);
-  --shadow: 0px 8px 16px -2px rgba(45, 36, 34, 0.08);
-  --shadow-md: 0px 12px 24px -4px rgba(45, 36, 34, 0.1);
-  --shadow-lg: 0px 16px 32px -4px rgba(45, 36, 34, 0.12);
-  --shadow-xl: 0px 24px 48px -8px rgba(45, 36, 34, 0.15);
-  --shadow-2xl: 0px 32px 64px -12px rgba(45, 36, 34, 0.18);
-
-  --tracking-normal: 0em;
-  --spacing: 0.25rem;
 }
 
 /* ----------------------------------------
@@ -117,21 +100,6 @@
   --popover-border: 20 10% 25%;
   --input: 20 10% 30%;
   --ring: 13 65% 62%;
-
-  --chart-1: 13 65% 62%;
-  --chart-2: 30 80% 65%;
-  --chart-3: 15 40% 50%;
-  --chart-4: 40 50% 70%;
-  --chart-5: 20 60% 55%;
-
-  --sidebar: 20 14% 12%;
-  --sidebar-foreground: 40 33% 97%;
-  --sidebar-border: 20 10% 25%;
-  --sidebar-primary: 13 65% 62%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 20 10% 25%;
-  --sidebar-accent-foreground: 40 33% 97%;
-  --sidebar-ring: 13 65% 62%;
 }
 
 /* ----------------------------------------
