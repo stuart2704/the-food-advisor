@@ -6,6 +6,9 @@ export default function RestaurantDetail() {
   const [searchParams] = useSearchParams();
   const [restaurant, setRestaurant] = useState<any>(null);
   const [aiDescription, setAiDescription] = useState("");
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [hours, setHours] = useState<string[]>([]);
+  const [openNow, setOpenNow] = useState<boolean | null>(null);
   const [email, setEmail] = useState("");
   const [claimSubmitting, setClaimSubmitting] = useState(false);
   const claimToken =
@@ -72,6 +75,39 @@ export default function RestaurantDetail() {
             .then(data => setAiDescription(data.description));
         }
       });
+
+    if (id) {
+      fetch(
+        `https://the-food-advisor-api.onrender.com/api/reviews/google/${encodeURIComponent(id)}`
+      )
+        .then(res => {
+          if (!res.ok) {
+            throw new Error("Google reviews are unavailable.");
+          }
+          return res.json();
+        })
+        .then(data => {
+          setReviews(Array.isArray(data.reviews) ? data.reviews : []);
+          return fetch(
+            `https://the-food-advisor-api.onrender.com/api/hours/${encodeURIComponent(id)}`
+          );
+        })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error("Opening hours are unavailable.");
+          }
+          return res.json();
+        })
+        .then(data => {
+          setHours(Array.isArray(data.hours) ? data.hours : []);
+          setOpenNow(typeof data.openNow === "boolean" ? data.openNow : null);
+        })
+        .catch(() => {
+          setReviews([]);
+          setHours([]);
+          setOpenNow(null);
+        });
+    }
   }, [id]);
 
   if (!restaurant) {
@@ -104,6 +140,37 @@ export default function RestaurantDetail() {
         <strong>Rating:</strong> {restaurant.rating} ⭐
       </div>
 
+      {hours.length > 0 && (
+        <div
+          style={{
+            marginTop: "40px",
+            background: "#fff",
+            padding: "24px",
+            borderRadius: "16px"
+          }}
+        >
+          <h2 style={{ marginBottom: "12px" }}>Opening Hours</h2>
+
+          {openNow !== null && (
+            <div
+              style={{
+                marginBottom: "16px",
+                fontWeight: 600,
+                color: openNow ? "green" : "red"
+              }}
+            >
+              {openNow ? "Open Now" : "Closed"}
+            </div>
+          )}
+
+          {hours.map((line: string, i) => (
+            <div key={i} style={{ marginBottom: "8px", opacity: 0.8 }}>
+              {line}
+            </div>
+          ))}
+        </div>
+      )}
+
       <div style={{ marginBottom: "20px" }}>
         <strong>Website:</strong>{" "}
         <a href={restaurant.website} target="_blank" rel="noreferrer">
@@ -135,6 +202,42 @@ export default function RestaurantDetail() {
         >
           <h2 style={{ marginBottom: "12px" }}>AI‑Generated Description</h2>
           {aiDescription}
+        </div>
+      )}
+
+      {reviews.length > 0 && (
+        <div
+          style={{
+            marginTop: "40px",
+            background: "#fff",
+            padding: "24px",
+            borderRadius: "16px"
+          }}
+        >
+          <h2 style={{ marginBottom: "20px" }}>Google Reviews</h2>
+
+          {reviews.map((rev: any, i) => (
+            <div
+              key={i}
+              style={{
+                marginBottom: "24px",
+                paddingBottom: "16px",
+                borderBottom: "1px solid #eee"
+              }}
+            >
+              <div style={{ fontWeight: 600, marginBottom: "6px" }}>
+                {rev.authorAttribution?.displayName || "Anonymous"}
+              </div>
+
+              <div style={{ opacity: 0.7, marginBottom: "8px" }}>
+                ⭐ {rev.rating} — {new Date(rev.publishTime).toLocaleDateString()}
+              </div>
+
+              <div style={{ lineHeight: "1.6" }}>
+                {rev.text?.text}
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

@@ -37,6 +37,7 @@ import menuScanRouter from "./menu-scan";
 import heatmapRouter from "./heatmap";
 import forecastRouter from "./forecast";
 import photoRouter from "./photo";
+import googleReviewsRouter from "./google-reviews";
 
 const router: IRouter = Router();
 
@@ -78,5 +79,6 @@ router.use(menuScanRouter);
 router.use(heatmapRouter);
 router.use(forecastRouter);
 router.use(photoRouter);
+router.use(googleReviewsRouter);
 
 export default router;
