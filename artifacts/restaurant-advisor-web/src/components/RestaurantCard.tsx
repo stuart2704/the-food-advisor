@@ -1,40 +1,26 @@
-type Props = {
-  name: string;
-  city: string;
-  cuisine: string;
-  image: string;
-};
+import { Link } from "react-router-dom";
 
-export default function RestaurantCard({ name, city, cuisine, image }: Props) {
+export default function RestaurantCard({ id, name, city, cuisine, image }: any) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "12px",
-        cursor: "pointer"
-      }}
+    <Link
+      to={`/restaurant/${id}`}
+      style={{ textDecoration: "none", color: "inherit" }}
     >
-      <img
-        src={image}
-        alt={name}
-        style={{
-          width: "100%",
-          height: "240px",
-          objectFit: "cover",
-          borderRadius: "16px",
-          border: "none",
-          boxShadow: "none"
-        }}
-      />
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <img
+          src={image}
+          alt={name}
+          style={{
+            width: "100%",
+            height: "240px",
+            objectFit: "cover",
+            borderRadius: "16px"
+          }}
+        />
 
-      <div style={{ fontSize: "1.2rem", fontWeight: 600 }}>
-        {name}
+        <div style={{ fontSize: "1.2rem", fontWeight: 600 }}>{name}</div>
+        <div style={{ opacity: 0.7 }}>{city} · {cuisine}</div>
       </div>
-
-      <div style={{ fontSize: "0.95rem", opacity: 0.7 }}>
-        {city} · {cuisine}
-      </div>
-    </div>
+    </Link>
   );
 }

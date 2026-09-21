@@ -28,6 +28,7 @@ export default function RestaurantGrid() {
         {restaurants.map((r: any) => (
           <RestaurantCard
             key={r.id}
+            id={r.id}
             name={r.name}
             city={r.city}
             cuisine={r.types?.[0] || "Restaurant"}

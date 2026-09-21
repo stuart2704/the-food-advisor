@@ -1,19 +1,27 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import Hero from "./components/Hero";
-import SearchBar from "./components/SearchBar";
 import RestaurantGrid from "./components/RestaurantGrid";
-import GrowWithAI from "./components/GrowWithAI";
-import Footer from "./components/Footer";
+import RestaurantDetail from "./components/RestaurantDetail";
 
 export default function App() {
   return (
-    <>
+    <BrowserRouter>
       <NavBar />
-      <Hero />
-      <SearchBar />
-      <RestaurantGrid />
-      <GrowWithAI />
-      <Footer />
-    </>
+
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Hero />
+              <RestaurantGrid />
+            </>
+          }
+        />
+
+        <Route path="/restaurant/:id" element={<RestaurantDetail />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
