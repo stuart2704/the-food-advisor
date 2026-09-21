@@ -2,23 +2,25 @@ type Props = {
   name: string;
   city: string;
   cuisine: string;
+  image: string;
 };
 
-export function RestaurantCard({ name, city, cuisine }: Props) {
+export default function RestaurantCard({ name, city, cuisine, image }: Props) {
   return (
-    <div
-      style={{
-        background: "#111827",
-        borderRadius: "8px",
-        padding: "16px",
-        border: "1px solid #1f2937",
-        marginBottom: "12px"
-      }}
-    >
-      <div style={{ fontWeight: 600 }}>{name}</div>
-      <div style={{ fontSize: "0.9rem", opacity: 0.8 }}>
-        {city} · {cuisine}
-      </div>
+    <div className="card">
+      <img
+        src={image}
+        alt={name}
+        style={{
+          width: "100%",
+          height: "160px",
+          objectFit: "cover",
+          borderRadius: "8px",
+          marginBottom: "12px",
+        }}
+      />
+      <div style={{ fontWeight: 600, marginBottom: 4 }}>{name}</div>
+      <div style={{ opacity: 0.7 }}>{city} · {cuisine}</div>
     </div>
   );
 }
