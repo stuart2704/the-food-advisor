@@ -7,6 +7,8 @@ type SearchFiltersProps = {
   setCuisine: (value: string) => void;
   rating: string;
   setRating: (value: string) => void;
+  openNow: boolean;
+  setOpenNow: (value: boolean) => void;
 };
 
 export default function SearchFilters({
@@ -17,7 +19,9 @@ export default function SearchFilters({
   cuisine,
   setCuisine,
   rating,
-  setRating
+  setRating,
+  openNow,
+  setOpenNow
 }: SearchFiltersProps) {
   return (
     <div
@@ -95,6 +99,15 @@ export default function SearchFilters({
         <option value="4.5">4.5+</option>
         <option value="4.7">4.7+</option>
       </select>
+
+      <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <input
+          type="checkbox"
+          checked={openNow}
+          onChange={(e) => setOpenNow(e.target.checked)}
+        />
+        Open Now
+      </label>
     </div>
   );
 }

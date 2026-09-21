@@ -9,6 +9,11 @@ export default function RestaurantGrid() {
   const [city, setCity] = useState("");
   const [cuisine, setCuisine] = useState("");
   const [rating, setRating] = useState("");
+  const [openNow, setOpenNow] = useState(false);
+  const [openStatus, setOpenStatus] = useState<
+    Record<string, boolean | null>
+  >({});
+  const [checkingOpenStatus, setCheckingOpenStatus] = useState(false);
 
   useEffect(() => {
     fetch("https://the-food-advisor-api.onrender.com/api/restaurants")
@@ -22,6 +27,66 @@ export default function RestaurantGrid() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (!openNow || restaurants.length === 0) {
+      setCheckingOpenStatus(false);
+      return;
+    }
+
+    const unchecked = restaurants.filter(
+      (restaurant: any) => !(restaurant.id in openStatus)
+    );
+    if (unchecked.length === 0) {
+      setCheckingOpenStatus(false);
+      return;
+    }
+
+    let cancelled = false;
+    let nextIndex = 0;
+    setCheckingOpenStatus(true);
+
+    async function worker() {
+      while (!cancelled && nextIndex < unchecked.length) {
+        const restaurant: any = unchecked[nextIndex++];
+        try {
+          const response = await fetch(
+            `https://the-food-advisor-api.onrender.com/api/open/${encodeURIComponent(restaurant.id)}`
+          );
+          if (!response.ok) {
+            throw new Error("Opening status is unavailable.");
+          }
+          const data = await response.json();
+          if (!cancelled) {
+            setOpenStatus(prev => ({
+              ...prev,
+              [restaurant.id]:
+                typeof data.openNow === "boolean" ? data.openNow : null
+            }));
+          }
+        } catch {
+          if (!cancelled) {
+            setOpenStatus(prev => ({
+              ...prev,
+              [restaurant.id]: null
+            }));
+          }
+        }
+      }
+    }
+
+    void Promise.all(
+      Array.from({ length: Math.min(4, unchecked.length) }, () => worker())
+    ).finally(() => {
+      if (!cancelled) {
+        setCheckingOpenStatus(false);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [openNow, restaurants]);
 
   if (loading) {
     return <div className="section">Loading restaurants…</div>;
@@ -40,7 +105,16 @@ export default function RestaurantGrid() {
     const matchesRating =
       rating === "" || r.rating >= parseFloat(rating);
 
-    return matchesSearch && matchesCity && matchesCuisine && matchesRating;
+    const matchesOpenNow =
+      !openNow || openStatus[r.id] === true;
+
+    return (
+      matchesSearch &&
+      matchesCity &&
+      matchesCuisine &&
+      matchesRating &&
+      matchesOpenNow
+    );
   });
 
   return (
@@ -54,6 +128,8 @@ export default function RestaurantGrid() {
         setCuisine={setCuisine}
         rating={rating}
         setRating={setRating}
+        openNow={openNow}
+        setOpenNow={setOpenNow}
       />
 
       <div className="grid">
@@ -69,7 +145,13 @@ export default function RestaurantGrid() {
         ))}
       </div>
 
-      {filtered.length === 0 && (
+      {checkingOpenStatus && (
+        <p style={{ textAlign: "center", opacity: 0.7 }}>
+          Checking which restaurants are open…
+        </p>
+      )}
+
+      {!checkingOpenStatus && filtered.length === 0 && (
         <p style={{ textAlign: "center", opacity: 0.7 }}>
           No restaurants match these filters.
         </p>

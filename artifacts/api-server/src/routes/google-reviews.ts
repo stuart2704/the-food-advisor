@@ -15,6 +15,10 @@ const priceCache = new Map<
   string,
   { data: PlacePriceResponse; expiresAt: number }
 >();
+const openCache = new Map<
+  string,
+  { data: PlaceOpenResponse; expiresAt: number }
+>();
 
 const PlaceParams = z.object({
   placeId: z.string().trim().min(1).max(300),
@@ -39,6 +43,10 @@ type PlaceHoursResponse = {
 
 type PlacePriceResponse = {
   priceLevel: string | null;
+};
+
+type PlaceOpenResponse = {
+  openNow: boolean | null;
 };
 
 router.get("/reviews/google/:placeId", async (req, res): Promise<void> => {
@@ -99,6 +107,10 @@ router.get("/reviews/google/:placeId", async (req, res): Promise<void> => {
           [],
         openNow: result.currentOpeningHours?.openNow ?? null,
       },
+      expiresAt: Date.now() + CACHE_TTL_MS,
+    });
+    openCache.set(placeId, {
+      data: { openNow: result.currentOpeningHours?.openNow ?? null },
       expiresAt: Date.now() + CACHE_TTL_MS,
     });
     priceCache.set(placeId, {
@@ -177,6 +189,67 @@ router.get("/price/:placeId", async (req, res): Promise<void> => {
   }
 });
 
+router.get("/open/:placeId", async (req, res): Promise<void> => {
+  const parsed = PlaceParams.safeParse(req.params);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid place ID." });
+    return;
+  }
+
+  const { placeId } = parsed.data;
+  const cached = openCache.get(placeId);
+  if (cached && cached.expiresAt > Date.now()) {
+    res.setHeader("Cache-Control", "public, max-age=21600");
+    res.json(cached.data);
+    return;
+  }
+
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+  if (!apiKey) {
+    res.status(503).json({ error: "Google Places opening status is not configured." });
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`,
+      {
+        headers: {
+          "X-Goog-Api-Key": apiKey,
+          "X-Goog-FieldMask": "currentOpeningHours",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      const message = await response.text();
+      req.log.warn(
+        { placeId, status: response.status, message },
+        "Google Places opening status request failed",
+      );
+      res.status(502).json({ error: "Opening status is temporarily unavailable." });
+      return;
+    }
+
+    const data = (await response.json()) as {
+      currentOpeningHours?: OpeningHours;
+    };
+    const result: PlaceOpenResponse = {
+      openNow: data.currentOpeningHours?.openNow ?? null,
+    };
+    openCache.set(placeId, {
+      data: result,
+      expiresAt: Date.now() + CACHE_TTL_MS,
+    });
+
+    res.setHeader("Cache-Control", "public, max-age=21600");
+    res.json(result);
+  } catch (error) {
+    req.log.error({ err: error, placeId }, "Google Places opening status lookup failed");
+    res.status(502).json({ error: "Opening status is temporarily unavailable." });
+  }
+});
+
 router.get("/hours/:placeId", async (req, res): Promise<void> => {
   const parsed = PlaceParams.safeParse(req.params);
   if (!parsed.success) {
@@ -233,6 +306,10 @@ router.get("/hours/:placeId", async (req, res): Promise<void> => {
     };
     hoursCache.set(placeId, {
       data: result,
+      expiresAt: Date.now() + CACHE_TTL_MS,
+    });
+    openCache.set(placeId, {
+      data: { openNow: result.openNow },
       expiresAt: Date.now() + CACHE_TTL_MS,
     });
 
