@@ -1,9 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { LockKeyhole, UtensilsCrossed } from 'lucide-react';
-import { useLocation } from 'wouter';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminLogin() {
-  const [, navigate] = useLocation();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -17,7 +16,7 @@ export default function AdminLogin() {
     })
       .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
       .then((result) => {
-        if (result.authenticated) navigate('/admin/dashboard', { replace: true });
+        if (result.authenticated) navigate('/admin/logs', { replace: true });
       })
       .catch(() => {
         // Keep the login form available if the session check is unavailable.
@@ -40,7 +39,7 @@ export default function AdminLogin() {
         setError(result.error ?? 'Login failed.');
         return;
       }
-      navigate('/admin/dashboard', { replace: true });
+      navigate('/admin/logs', { replace: true });
     } catch {
       setError('Could not reach the admin service.');
     } finally {
@@ -49,46 +48,76 @@ export default function AdminLogin() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-6 py-12 text-foreground">
-      <section className="w-full max-w-md rounded-3xl border border-card-border bg-card p-8 shadow-md md:p-10">
-        <div className="mb-8 flex items-center gap-3">
-          <span className="rounded-xl bg-primary p-3 text-primary-foreground shadow-sm">
-            <UtensilsCrossed className="h-6 w-6" />
+    <main
+      style={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+        padding: '48px 24px',
+        background: '#fffaf7',
+        color: '#1d1d1d',
+      }}
+    >
+      <section
+        style={{
+          width: 'min(420px, 100%)',
+          padding: '32px',
+          border: '1px solid #eaded7',
+          borderRadius: '24px',
+          background: '#fff',
+          boxShadow: '0 18px 50px rgba(78, 36, 10, 0.12)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
+          <span
+            aria-hidden="true"
+            style={{
+              display: 'grid',
+              placeItems: 'center',
+              width: '48px',
+              height: '48px',
+              borderRadius: '12px',
+              background: '#d94800',
+              color: '#fff',
+              fontWeight: 800,
+            }}
+          >
+            TFA
           </span>
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">
+            <p style={{ margin: 0, color: '#d94800', fontSize: '0.78rem', fontWeight: 800, letterSpacing: '0.14em' }}>
               The Food Advisor
             </p>
-            <h1 className="font-serif text-3xl font-semibold">Admin Login</h1>
+            <h1 style={{ margin: '4px 0 0', fontSize: '1.8rem' }}>Admin Login</h1>
           </div>
         </div>
 
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          <label className="block">
-            <span className="mb-2 block text-sm font-semibold">Email</span>
+        <form style={{ display: 'grid', gap: '18px' }} onSubmit={handleSubmit}>
+          <label style={{ display: 'grid', gap: '8px', fontWeight: 700 }}>
+            <span>Email</span>
             <input
               type="email"
               autoComplete="username"
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-xl border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+              style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', border: '1px solid #cfc3bc', borderRadius: '10px', font: 'inherit' }}
             />
           </label>
-          <label className="block">
-            <span className="mb-2 block text-sm font-semibold">Password</span>
+          <label style={{ display: 'grid', gap: '8px', fontWeight: 700 }}>
+            <span>Password</span>
             <input
               type="password"
               autoComplete="current-password"
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-xl border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+              style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', border: '1px solid #cfc3bc', borderRadius: '10px', font: 'inherit' }}
             />
           </label>
 
           {error ? (
-            <p role="alert" className="rounded-xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            <p role="alert" style={{ margin: 0, padding: '11px 13px', borderRadius: '10px', background: '#fff0ef', color: '#a12018' }}>
               {error}
             </p>
           ) : null}
@@ -96,9 +125,8 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={submitting}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            style={{ width: '100%', padding: '13px 18px', border: 0, borderRadius: '10px', background: '#d94800', color: '#fff', font: 'inherit', fontWeight: 800, cursor: submitting ? 'wait' : 'pointer', opacity: submitting ? 0.65 : 1 }}
           >
-            <LockKeyhole className="h-4 w-4" />
             {submitting ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
