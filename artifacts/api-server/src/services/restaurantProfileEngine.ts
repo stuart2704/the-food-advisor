@@ -28,6 +28,13 @@ export interface RestaurantProfile {
     startDate: string;
     endDate: string;
   }>;
+  events: Array<{
+    title: string;
+    description: string;
+    date: string;
+    time: string;
+    price: string;
+  }>;
   googleMapsUrl: string;
   rating: number | null;
   lat: number | null;
@@ -112,6 +119,7 @@ export async function getRestaurantProfile(
     bookingUrl: null,
     bookingProvider: null,
     offers: [],
+    events: [],
     googleMapsUrl: restaurant.googleMapsUrl,
     rating: restaurant.rating,
     lat: restaurant.latitude,
