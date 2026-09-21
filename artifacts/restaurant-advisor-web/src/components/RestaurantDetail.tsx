@@ -280,6 +280,47 @@ export default function RestaurantDetail() {
         </div>
       )}
 
+      {restaurant.offers && restaurant.offers.length > 0 && (
+        <div
+          style={{
+            marginTop: "40px",
+            background: "#fff",
+            padding: "24px",
+            borderRadius: "16px"
+          }}
+        >
+          <h2>Special Offers</h2>
+
+          {restaurant.offers.map((offer: {
+            title: string;
+            description: string;
+            startDate: string;
+            endDate: string;
+          }, i: number) => (
+            <div
+              key={i}
+              style={{
+                marginBottom: "20px",
+                paddingBottom: "16px",
+                borderBottom: "1px solid #eee"
+              }}
+            >
+              <div style={{ fontWeight: 600, marginBottom: "6px" }}>
+                {offer.title}
+              </div>
+
+              <div style={{ opacity: 0.8, marginBottom: "8px" }}>
+                {offer.description}
+              </div>
+
+              <div style={{ fontSize: "0.9rem", opacity: 0.6 }}>
+                {offer.startDate} → {offer.endDate}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div style={{ marginTop: "40px", opacity: 0.7 }}>
         <em>More features coming soon…</em>
       </div>
