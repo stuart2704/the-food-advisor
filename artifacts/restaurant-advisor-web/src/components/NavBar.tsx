@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function NavBar() {
   return (
     <nav
@@ -41,6 +43,9 @@ export default function NavBar() {
         <a href="/" style={{ textDecoration: "none", color: "#333" }}>
           Home
         </a>
+        <Link to="/trending" style={{ textDecoration: "none", color: "#333" }}>
+          Trending
+        </Link>
         <a href="/restaurants" style={{ textDecoration: "none", color: "#333" }}>
           Restaurants
         </a>

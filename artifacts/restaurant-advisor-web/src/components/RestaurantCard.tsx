@@ -27,7 +27,9 @@ export default function RestaurantCard({
   cuisine,
   openStatus,
   userLocation,
-  location
+  location,
+  score,
+  reason
 }: any) {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
@@ -56,6 +58,16 @@ export default function RestaurantCard({
 
         <div style={{ fontSize: "1.2rem", fontWeight: 600 }}>{name}</div>
         <div style={{ opacity: 0.7 }}>{city} · {cuisine}</div>
+        {typeof score === "number" && (
+          <div style={{ marginTop: "8px", fontWeight: 600 }}>
+            🔥 Trending Score: {score}/100
+          </div>
+        )}
+        {reason && (
+          <div style={{ opacity: 0.7, fontSize: "0.9rem" }}>
+            {reason}
+          </div>
+        )}
         {typeof openStatus?.[id] === "boolean" && (
           <div style={{ opacity: 0.7 }}>
             {openStatus[id] ? "🟢 Open Now" : "🔴 Closed"}

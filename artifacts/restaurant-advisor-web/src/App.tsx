@@ -4,6 +4,7 @@ import Hero from "./components/Hero";
 import RestaurantGrid from "./components/RestaurantGrid";
 import RestaurantDetail from "./components/RestaurantDetail";
 import OwnerDashboard from "./components/OwnerDashboard";
+import Trending from "./components/Trending";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         />
 
         <Route path="/restaurant/:id" element={<RestaurantDetail />} />
+        <Route path="/trending" element={<Trending />} />
         <Route path="/owner" element={<OwnerDashboard />} />
       </Routes>
     </BrowserRouter>
