@@ -22,6 +22,12 @@ export interface RestaurantProfile {
   deliveryUrl: string | null;
   bookingUrl: string | null;
   bookingProvider: string | null;
+  offers: Array<{
+    title: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+  }>;
   googleMapsUrl: string;
   rating: number | null;
   lat: number | null;
@@ -105,6 +111,7 @@ export async function getRestaurantProfile(
     deliveryUrl: restaurant.deliveryUrl,
     bookingUrl: null,
     bookingProvider: null,
+    offers: [],
     googleMapsUrl: restaurant.googleMapsUrl,
     rating: restaurant.rating,
     lat: restaurant.latitude,
