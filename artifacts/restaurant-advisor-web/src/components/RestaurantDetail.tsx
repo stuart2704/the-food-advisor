@@ -338,24 +338,36 @@ export default function RestaurantDetail() {
       </div>
 
       {restaurant.bookingUrl && (
-        <div style={{ marginTop: "20px" }}>
-          <a
-            href={restaurant.bookingUrl}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              display: "inline-block",
-              padding: "14px 24px",
-              background: "#d94800",
-              color: "#fff",
-              borderRadius: "12px",
-              fontWeight: 600,
-              textDecoration: "none"
-            }}
-          >
-            Book a Table
-          </a>
-        </div>
+        <a
+          href={restaurant.bookingUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-block",
+            marginTop: "20px",
+            padding: "14px 24px",
+            background: "#d94800",
+            color: "#fff",
+            fontWeight: 700,
+            borderRadius: "10px",
+            textDecoration: "none",
+            fontSize: "1.1rem",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+            transition: "transform 0.15s ease, box-shadow 0.15s ease"
+          }}
+          onMouseEnter={(event) => {
+            event.currentTarget.style.transform = "translateY(-2px)";
+            event.currentTarget.style.boxShadow =
+              "0 6px 14px rgba(0,0,0,0.2)";
+          }}
+          onMouseLeave={(event) => {
+            event.currentTarget.style.transform = "translateY(0)";
+            event.currentTarget.style.boxShadow =
+              "0 4px 10px rgba(0,0,0,0.15)";
+          }}
+        >
+          Book Now
+        </a>
       )}
 
       {restaurant.offers && restaurant.offers.length > 0 && (
