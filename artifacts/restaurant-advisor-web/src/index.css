@@ -1,12 +1,12 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #faf7f2; /* warm, premium off‑white */
+  background: #fdf8f3;
   color: #1a1a1a;
 }
 
 .hero {
-  background: linear-gradient(135deg, #d94800, #ff6a00);
+  background: linear-gradient(135deg, #c63f00, #ff5a00);
   color: white;
   padding: 80px 24px;
   text-align: center;
@@ -37,8 +37,7 @@ body {
 }
 
 .card {
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
+  background: transparent;
+  padding: 0;
   box-shadow: none;
 }
