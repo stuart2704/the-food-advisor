@@ -27,25 +27,20 @@ export default function RestaurantGrid() {
     return <div className="section">Loading restaurants…</div>;
   }
 
-  const normalizedSearch = search.trim().toLowerCase();
-  const minimumRating = rating ? Number(rating) : 0;
-  const filteredRestaurants = restaurants.filter((restaurant: any) => {
-    const types = Array.isArray(restaurant.types) ? restaurant.types : [];
-    const searchableText = [
-      restaurant.name,
-      restaurant.city,
-      ...types
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+  const filtered = restaurants.filter((r: any) => {
+    const matchesSearch =
+      r.name.toLowerCase().includes(search.toLowerCase());
 
-    return (
-      (!normalizedSearch || searchableText.includes(normalizedSearch)) &&
-      (!city || restaurant.city === city) &&
-      (!cuisine || types.includes(cuisine)) &&
-      (!minimumRating || Number(restaurant.rating) >= minimumRating)
-    );
+    const matchesCity =
+      city === "" || r.city === city;
+
+    const matchesCuisine =
+      cuisine === "" || r.types?.includes(cuisine);
+
+    const matchesRating =
+      rating === "" || r.rating >= parseFloat(rating);
+
+    return matchesSearch && matchesCity && matchesCuisine && matchesRating;
   });
 
   return (
@@ -62,7 +57,7 @@ export default function RestaurantGrid() {
       />
 
       <div className="grid">
-        {filteredRestaurants.map((r: any) => (
+        {filtered.map((r: any) => (
           <RestaurantCard
             key={r.id}
             id={r.id}
@@ -74,7 +69,7 @@ export default function RestaurantGrid() {
         ))}
       </div>
 
-      {filteredRestaurants.length === 0 && (
+      {filtered.length === 0 && (
         <p style={{ textAlign: "center", opacity: 0.7 }}>
           No restaurants match these filters.
         </p>
