@@ -1,12 +1,33 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+type Coordinates = {
+  lat: number;
+  lng: number;
+};
+
+function distanceInKilometres(from: Coordinates, to: Coordinates) {
+  const earthRadiusKm = 6371;
+  const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+  const latitudeDelta = toRadians(to.lat - from.lat);
+  const longitudeDelta = toRadians(to.lng - from.lng);
+  const haversine =
+    Math.sin(latitudeDelta / 2) ** 2 +
+    Math.cos(toRadians(from.lat)) *
+      Math.cos(toRadians(to.lat)) *
+      Math.sin(longitudeDelta / 2) ** 2;
+
+  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+}
+
 export default function RestaurantCard({
   id,
   name,
   city,
   cuisine,
-  openStatus
+  openStatus,
+  userLocation,
+  location
 }: any) {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
@@ -38,6 +59,11 @@ export default function RestaurantCard({
         {typeof openStatus?.[id] === "boolean" && (
           <div style={{ opacity: 0.7 }}>
             {openStatus[id] ? "🟢 Open Now" : "🔴 Closed"}
+          </div>
+        )}
+        {userLocation && location && (
+          <div style={{ opacity: 0.7 }}>
+            {distanceInKilometres(userLocation, location).toFixed(1)} km away
           </div>
         )}
       </div>
