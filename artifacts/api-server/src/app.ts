@@ -72,7 +72,13 @@ app.use(
   }),
 );
 app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
-app.use(cors({ credentials: true, origin: true }));
+app.use(cors({
+  credentials: true,
+  origin: [
+    "https://www.thefoodadvisor.co.uk",
+    "https://thefoodadvisor.co.uk"
+  ]
+}));
 // Instantly webhook authentication/body limits are owned by this router and
 // must run before the global JSON parser. Keep both documented aliases on the
 // same handler; neither path registers a provider webhook or sends mail.
@@ -177,8 +183,5 @@ app.use(
     next(error);
   },
 );
-app.get("/", (req, res) => {
-  res.status(200).send("API is running");
-});
 
 export default app;
