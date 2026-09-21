@@ -321,6 +321,52 @@ export default function RestaurantDetail() {
         </div>
       )}
 
+      {restaurant.events && restaurant.events.length > 0 && (
+        <div
+          style={{
+            marginTop: "40px",
+            background: "#fff",
+            padding: "24px",
+            borderRadius: "16px"
+          }}
+        >
+          <h2>Events & Live Music</h2>
+
+          {restaurant.events.map((event: {
+            title: string;
+            description: string;
+            date: string;
+            time: string;
+            price: string;
+          }, i: number) => (
+            <div
+              key={i}
+              style={{
+                marginBottom: "20px",
+                paddingBottom: "16px",
+                borderBottom: "1px solid #eee"
+              }}
+            >
+              <div style={{ fontWeight: 600, marginBottom: "6px" }}>
+                {event.title}
+              </div>
+
+              <div style={{ opacity: 0.8, marginBottom: "8px" }}>
+                {event.description}
+              </div>
+
+              <div style={{ fontSize: "0.9rem", opacity: 0.7 }}>
+                {event.date} at {event.time}
+              </div>
+
+              <div style={{ fontSize: "0.9rem", opacity: 0.7 }}>
+                {event.price}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div style={{ marginTop: "40px", opacity: 0.7 }}>
         <em>More features coming soon…</em>
       </div>
