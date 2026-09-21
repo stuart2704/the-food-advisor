@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 export default function RestaurantDetail() {
   const { id } = useParams();
   const [restaurant, setRestaurant] = useState<any>(null);
+  const [aiDescription, setAiDescription] = useState("");
 
   useEffect(() => {
     fetch("https://the-food-advisor-api.onrender.com/api/restaurants")
@@ -11,6 +12,20 @@ export default function RestaurantDetail() {
       .then(data => {
         const match = data.find((r: any) => r.id === id);
         setRestaurant(match);
+        if (match) {
+          fetch("https://the-food-advisor-api.onrender.com/ai/describe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: match.name,
+              city: match.city,
+              cuisine: match.types?.[0] || "Restaurant",
+              rating: match.rating
+            })
+          })
+            .then(res => res.json())
+            .then(data => setAiDescription(data.description));
+        }
       });
   }, [id]);
 
@@ -61,6 +76,22 @@ export default function RestaurantDetail() {
       <div style={{ marginTop: "40px", opacity: 0.7 }}>
         <em>More features coming soon…</em>
       </div>
+
+      {aiDescription && (
+        <div
+          style={{
+            marginTop: "40px",
+            fontSize: "1.1rem",
+            lineHeight: "1.6",
+            background: "#fff",
+            padding: "24px",
+            borderRadius: "16px"
+          }}
+        >
+          <h2 style={{ marginBottom: "12px" }}>AI‑Generated Description</h2>
+          {aiDescription}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,15 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function RestaurantCard({ id, name, city, cuisine, image }: any) {
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`https://the-food-advisor-api.onrender.com/api/photo/${id}`)
+      .then(res => res.json())
+      .then(data => setPhotoUrl(data.url));
+  }, [id]);
+
   return (
     <Link
       to={`/restaurant/${id}`}
@@ -8,7 +17,7 @@ export default function RestaurantCard({ id, name, city, cuisine, image }: any) 
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <img
-          src={image}
+          src={photoUrl || `https://source.unsplash.com/600x400/?restaurant,${city}`}
           alt={name}
           style={{
             width: "100%",

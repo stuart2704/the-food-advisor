@@ -36,6 +36,7 @@ import aiPhotoRouter from "./ai-photo";
 import menuScanRouter from "./menu-scan";
 import heatmapRouter from "./heatmap";
 import forecastRouter from "./forecast";
+import photoRouter from "./photo";
 
 const router: IRouter = Router();
 
@@ -76,5 +77,6 @@ router.use(aiPhotoRouter);
 router.use(menuScanRouter);
 router.use(heatmapRouter);
 router.use(forecastRouter);
+router.use(photoRouter);
 
 export default router;
