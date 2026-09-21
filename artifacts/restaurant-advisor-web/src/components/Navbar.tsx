@@ -21,12 +21,12 @@ export default function Navbar() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        background: "#d94800",
+        background: "linear-gradient(90deg, #d94800, #ff6a00)",
         position: "sticky",
         top: 0,
         zIndex: 999,
         borderBottom: "1px solid #b83d00",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.06)"
+        boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
       }}
     >
       <Link
