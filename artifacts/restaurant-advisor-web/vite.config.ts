@@ -3,7 +3,13 @@ import react from "@vitejs/plugin-react-swc";
 
 export default defineConfig({
   plugins: [react()],
-  root: ".",
+  server: {
+    host: true
+  },
+  preview: {
+    host: true,
+    allowedHosts: ["the-food-advisor-frontend.onrender.com"]
+  },
   build: {
     outDir: "dist"
   }
