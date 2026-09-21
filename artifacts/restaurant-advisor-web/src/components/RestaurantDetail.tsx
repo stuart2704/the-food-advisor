@@ -1,6 +1,19 @@
 import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+function formatPrice(level: string | null) {
+  if (level === null) return "Not available";
+  return (
+    {
+      PRICE_LEVEL_FREE: "Free",
+      PRICE_LEVEL_INEXPENSIVE: "£",
+      PRICE_LEVEL_MODERATE: "££",
+      PRICE_LEVEL_EXPENSIVE: "£££",
+      PRICE_LEVEL_VERY_EXPENSIVE: "££££"
+    }[level] || "Not available"
+  );
+}
+
 export default function RestaurantDetail() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -9,6 +22,7 @@ export default function RestaurantDetail() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [hours, setHours] = useState<string[]>([]);
   const [openNow, setOpenNow] = useState<boolean | null>(null);
+  const [priceLevel, setPriceLevel] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [claimSubmitting, setClaimSubmitting] = useState(false);
   const claimToken =
@@ -101,11 +115,26 @@ export default function RestaurantDetail() {
         .then(data => {
           setHours(Array.isArray(data.hours) ? data.hours : []);
           setOpenNow(typeof data.openNow === "boolean" ? data.openNow : null);
+          return fetch(
+            `https://the-food-advisor-api.onrender.com/api/price/${encodeURIComponent(id)}`
+          );
+        })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error("Price level is unavailable.");
+          }
+          return res.json();
+        })
+        .then(data => {
+          setPriceLevel(
+            typeof data.priceLevel === "string" ? data.priceLevel : null
+          );
         })
         .catch(() => {
           setReviews([]);
           setHours([]);
           setOpenNow(null);
+          setPriceLevel(null);
         });
     }
   }, [id]);
@@ -138,6 +167,10 @@ export default function RestaurantDetail() {
 
       <div style={{ marginBottom: "20px" }}>
         <strong>Rating:</strong> {restaurant.rating} ⭐
+      </div>
+
+      <div style={{ marginBottom: "20px" }}>
+        <strong>Price Level:</strong> {formatPrice(priceLevel)}
       </div>
 
       {hours.length > 0 && (
