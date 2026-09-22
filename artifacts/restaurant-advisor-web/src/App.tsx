@@ -5,7 +5,7 @@ import OwnerDashboard from "./components/OwnerDashboard";
 import Trending from "./components/Trending";
 import Home from "./components/Home";
 import CityGuide from "./components/CityGuide";
-import AdminLogin from "./pages/admin-login";
+import AdminLogin from "./admin/AdminLogin";
 import AdminDashboard from "./pages/admin/dashboard";
 import AdminErrors from "./pages/admin/errors";
 import AdminLogs from "./pages/admin/logs";
