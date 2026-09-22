@@ -19,3 +19,4 @@
 
 export * from "./restaurants";
 export * from "./aiUsage";
+export * from "./operationalLog";
