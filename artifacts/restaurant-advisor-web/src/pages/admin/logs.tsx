@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "../../components/admin/AdminLayout";
+import { SystemHealth } from "../../components/admin/SystemHealth";
 import LogViewer from "../../components/log-viewer/LogViewer";
 import "../../styles/log-viewer.css";
 
@@ -86,6 +87,7 @@ export default function AdminLogs() {
         Sanitized process-local events. The feed refreshes every three seconds
         and resets when the API process restarts.
       </p>
+      <SystemHealth />
       <LogViewer />
     </AdminLayout>
   );
