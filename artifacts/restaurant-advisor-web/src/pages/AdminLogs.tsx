@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Sidebar } from "../components/admin/Sidebar";
 import { LiveEvents } from "../components/live-events";
 import "./live-events.css";
 
@@ -68,59 +69,7 @@ export default function AdminLogs() {
           gap: "28px"
         }}
       >
-        <aside
-          className="admin-system-navigation"
-          style={{
-            position: "sticky",
-            top: "24px",
-            alignSelf: "start",
-            padding: "20px 14px",
-            border: "1px solid #292929",
-            borderRadius: "12px",
-            background: "#151515"
-          }}
-        >
-          <div
-            style={{
-              margin: "0 8px 12px",
-              color: "#ff8b47",
-              fontSize: "0.78rem",
-              fontWeight: 800,
-              letterSpacing: "0.14em",
-              textTransform: "uppercase"
-            }}
-          >
-            System
-          </div>
-          <nav aria-label="System administration">
-            {["Logs", "Queue", "Engines", "Health"].map((item) => {
-              const active = item === "Logs";
-              return (
-                <button
-                  key={item}
-                  type="button"
-                  disabled={!active}
-                  aria-current={active ? "page" : undefined}
-                  title={active ? undefined : `${item} is not available yet`}
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px",
-                    border: 0,
-                    borderRadius: "8px",
-                    background: active ? "#d94800" : "transparent",
-                    color: active ? "#fff" : "#777",
-                    textAlign: "left",
-                    font: "inherit",
-                    fontWeight: active ? 700 : 500,
-                    cursor: active ? "default" : "not-allowed"
-                  }}
-                >
-                  {item}
-                </button>
-              );
-            })}
-          </nav>
-        </aside>
+        <Sidebar />
 
         <section style={{ minWidth: 0 }}>
           <header
