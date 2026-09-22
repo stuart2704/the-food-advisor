@@ -1,3 +1,100 @@
+.metrics-panel {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #2c2c2c;
+  border-radius: 12px;
+  background: #171717;
+}
+
+.metrics-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.metrics-panel-eyebrow {
+  margin: 0 0 4px;
+  color: #ff8b47;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.metrics-panel h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.metrics-panel-window {
+  color: #a8a8a8;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.metrics-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.metrics-panel-card {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #303030;
+  border-radius: 9px;
+  background: #202020;
+}
+
+.metrics-panel-card span {
+  display: block;
+  min-height: 2.4em;
+  color: #aaa;
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.metrics-panel-card strong {
+  display: block;
+  margin-top: 7px;
+  color: #f4f4f4;
+  font-size: 1.45rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.metrics-panel-status {
+  margin: 12px 0 0;
+  color: #888;
+  font-size: 0.78rem;
+}
+
+.metrics-panel-status.has-error {
+  color: #ff9b8d;
+}
+
+@media (max-width: 900px) {
+  .metrics-panel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .metrics-panel {
+    padding: 16px;
+  }
+
+  .metrics-panel-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .metrics-panel-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .events-box {
   background: #111;
   color: #eee;

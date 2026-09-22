@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "../../components/admin/AdminLayout";
+import MetricsPanel from "../../components/admin/MetricsPanel";
 import { SystemHealth } from "../../components/admin/SystemHealth";
 import LogViewer from "../../components/log-viewer/LogViewer";
 import "../../styles/log-viewer.css";
@@ -88,6 +89,7 @@ export default function AdminLogs() {
         and resets when the API process restarts.
       </p>
       <SystemHealth />
+      <MetricsPanel />
       <LogViewer />
     </AdminLayout>
   );
