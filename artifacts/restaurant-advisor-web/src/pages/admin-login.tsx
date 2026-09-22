@@ -17,7 +17,7 @@ export default function AdminLogin() {
     })
       .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
       .then((result) => {
-        if (result.authenticated) navigate('/admin/logs', { replace: true });
+        if (result.authenticated) navigate('/admin/dashboard', { replace: true });
       })
       .catch(() => {
         // Keep the login form available if the session check is unavailable.
@@ -40,7 +40,7 @@ export default function AdminLogin() {
         setError(result.error ?? 'Login failed.');
         return;
       }
-      navigate('/admin/logs', { replace: true });
+      navigate('/admin/dashboard', { replace: true });
     } catch {
       setError('Could not reach the admin service.');
     } finally {

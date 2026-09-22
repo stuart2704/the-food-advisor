@@ -1,6 +1,13 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
-const sections = ["Queue", "Engines", "Health"];
+const sections = [
+  { to: "/admin/dashboard", label: "Dashboard" },
+  { to: "/admin/performance", label: "Performance" },
+  { to: "/admin/errors", label: "Errors" },
+  { to: "/admin/outreach", label: "Outreach" },
+  { to: "/admin/restaurants", label: "Restaurants" },
+  { to: "/admin/logs", label: "Logs" },
+] as const;
 
 export function Sidebar() {
   return (
@@ -29,42 +36,22 @@ export function Sidebar() {
         System
       </div>
       <nav aria-label="System administration">
-        <Link
-          to="/admin/logs"
-          aria-current="page"
-          style={{
-            display: "block",
-            padding: "10px 12px",
-            borderRadius: "8px",
-            background: "#d94800",
-            color: "#fff",
-            fontWeight: 700,
-            textDecoration: "none"
-          }}
-        >
-          Logs
-        </Link>
         {sections.map((section) => (
-          <button
-            key={section}
-            type="button"
-            disabled
-            title={`${section} is not available yet`}
-            style={{
-              width: "100%",
+          <NavLink
+            key={section.to}
+            to={section.to}
+            style={({ isActive }) => ({
+              display: "block",
               padding: "10px 12px",
-              border: 0,
               borderRadius: "8px",
-              background: "transparent",
-              color: "#777",
-              textAlign: "left",
-              font: "inherit",
-              fontWeight: 500,
-              cursor: "not-allowed"
-            }}
+              background: isActive ? "#d94800" : "transparent",
+              color: isActive ? "#fff" : "#aaa",
+              fontWeight: isActive ? 700 : 500,
+              textDecoration: "none",
+            })}
           >
-            {section}
-          </button>
+            {section.label}
+          </NavLink>
         ))}
       </nav>
     </aside>
