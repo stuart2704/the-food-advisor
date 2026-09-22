@@ -94,6 +94,42 @@
   background: #666;
 }
 
+.system-health-status.status-healthy {
+  color: #83d69b;
+}
+
+.system-health-status.status-healthy .system-health-dot {
+  background: #45b96a;
+}
+
+.system-health-status.status-degraded {
+  color: #f7c66b;
+}
+
+.system-health-status.status-degraded .system-health-dot {
+  background: #d89b2b;
+}
+
+.system-health-status.status-error {
+  color: #ff8b82;
+}
+
+.system-health-status.status-error .system-health-dot {
+  background: #e85149;
+}
+
+.system-health-message {
+  grid-column: 1 / -1;
+  color: #aaa;
+  font-weight: 500 !important;
+}
+
+.system-health-updated {
+  margin-top: 10px !important;
+  color: #777;
+  font-size: 11px;
+}
+
 .log-filters {
   display: flex;
   flex-wrap: wrap;
