@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { z } from "zod";
+import { classifyError } from "../errors/errorService";
 import { validAutomationToken } from "../lib/automation-auth";
 import { recordHeartbeat } from "../services/engineHeartbeat";
 import { logEvent } from "../utils/eventLog";
@@ -38,12 +39,30 @@ router.post("/", async (req, res) => {
   }
   try {
     if ("engine" in parsed.data) {
-      logEvent(parsed.data.engine, parsed.data.summary, parsed.data.severity);
+      const tags =
+        parsed.data.severity.toLowerCase() === "error"
+          ? [classifyError(parsed.data)]
+          : [];
+      logEvent(
+        parsed.data.engine,
+        parsed.data.summary,
+        parsed.data.severity,
+        tags,
+      );
       if (parsed.data.summary.trim().toLowerCase() === "heartbeat") {
         await recordHeartbeat(parsed.data.engine);
       }
     } else {
-      logEvent(parsed.data.type, parsed.data.message, parsed.data.category);
+      const tags =
+        parsed.data.category?.toLowerCase() === "error"
+          ? [classifyError(parsed.data)]
+          : [];
+      logEvent(
+        parsed.data.type,
+        parsed.data.message,
+        parsed.data.category,
+        tags,
+      );
       if (parsed.data.message.trim().toLowerCase() === "heartbeat") {
         await recordHeartbeat(parsed.data.type);
       }

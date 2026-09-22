@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "../../components/admin/AdminLayout";
+import ErrorPanel from "../../components/admin/ErrorPanel";
 import MetricsPanel from "../../components/admin/MetricsPanel";
 import PerformancePanel from "../../components/admin/PerformancePanel";
 import { SystemHealth } from "../../components/admin/SystemHealth";
@@ -92,6 +93,7 @@ export default function AdminLogs() {
       <SystemHealth />
       <MetricsPanel />
       <PerformancePanel />
+      <ErrorPanel />
       <LogViewer />
     </AdminLayout>
   );
