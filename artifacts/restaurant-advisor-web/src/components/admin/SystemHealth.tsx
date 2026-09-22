@@ -19,6 +19,16 @@ interface SystemHealthResponse {
   };
 }
 
+type EngineStatus = "online" | "offline";
+
+interface EngineHealthResponse {
+  ai: { status: EngineStatus };
+  automation: { status: EngineStatus };
+  queue: { status: EngineStatus };
+  api: { status: EngineStatus };
+  database: { status: EngineStatus };
+}
+
 const serviceLabels: Record<keyof SystemHealthResponse["services"], string> = {
   ai: "AI Engine",
   automation: "Automation",
@@ -55,8 +65,28 @@ function isSystemHealth(value: unknown): value is SystemHealthResponse {
   );
 }
 
+function isEngineStatus(value: unknown): value is { status: EngineStatus } {
+  if (!value || typeof value !== "object") return false;
+  return ["online", "offline"].includes(
+    (value as { status?: string }).status ?? ""
+  );
+}
+
+function isEngineHealth(value: unknown): value is EngineHealthResponse {
+  if (!value || typeof value !== "object") return false;
+  const health = value as Partial<EngineHealthResponse>;
+  return (
+    isEngineStatus(health.ai) &&
+    isEngineStatus(health.automation) &&
+    isEngineStatus(health.queue) &&
+    isEngineStatus(health.api) &&
+    isEngineStatus(health.database)
+  );
+}
+
 export function SystemHealth() {
   const [health, setHealth] = useState<SystemHealthResponse | null>(null);
+  const [heartbeats, setHeartbeats] = useState<EngineHealthResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -69,21 +99,29 @@ export function SystemHealth() {
       pending = true;
       controller = new AbortController();
       try {
-        const response = await fetch("/dashboard/system-health", {
+        const options: RequestInit = {
           credentials: "include",
           cache: "no-store",
           headers: { Accept: "application/json" },
           signal: controller.signal
-        });
-        if (!response.ok) {
+        };
+        const [healthResponse, heartbeatResponse] = await Promise.all([
+          fetch("/dashboard/system-health", options),
+          fetch("/health", options)
+        ]);
+        if (!healthResponse.ok || !heartbeatResponse.ok) {
           throw new Error("Live system health is unavailable.");
         }
-        const data = (await response.json()) as unknown;
-        if (!isSystemHealth(data)) {
+        const [healthData, heartbeatData] = (await Promise.all([
+          healthResponse.json(),
+          heartbeatResponse.json()
+        ])) as [unknown, unknown];
+        if (!isSystemHealth(healthData) || !isEngineHealth(heartbeatData)) {
           throw new Error("System health returned an unexpected response.");
         }
         if (!disposed) {
-          setHealth(data);
+          setHealth(healthData);
+          setHeartbeats(heartbeatData);
           setError(null);
         }
       } catch (caught) {
@@ -116,15 +154,26 @@ export function SystemHealth() {
         [keyof SystemHealthResponse["services"], HealthCheck]
       >)
     : [];
+  const heartbeatEntries = heartbeats
+    ? (Object.entries(heartbeats) as Array<
+        [keyof EngineHealthResponse, { status: EngineStatus }]
+      >)
+    : [];
   const summary = useMemo(() => {
     if (!health) return error ? "Checks unavailable" : "Checking services";
     const unhealthy = services.filter(
       ([, check]) => check.status !== "healthy"
     ).length;
+    const offline = heartbeatEntries.filter(
+      ([, heartbeat]) => heartbeat.status === "offline"
+    ).length;
+    if (offline > 0) {
+      return `${offline} engine${offline === 1 ? "" : "s"} offline`;
+    }
     return unhealthy === 0
       ? "All reported checks healthy"
       : `${unhealthy} check${unhealthy === 1 ? "" : "s"} need attention`;
-  }, [error, health, services]);
+  }, [error, health, heartbeatEntries, services]);
 
   return (
     <section className="system-health" aria-labelledby="system-health-title">
@@ -141,15 +190,23 @@ export function SystemHealth() {
       </p>
       <ul>
         {health ? (
-          services.map(([key, check]) => (
+          services.map(([key, check]) => {
+            const heartbeat = heartbeats?.[key]?.status ?? "offline";
+            return (
             <li key={key} title={check.detail}>
               <span>{serviceLabels[key]}</span>
-              <span className={`system-health-status status-${check.status}`}>
-                <span className="system-health-dot" aria-hidden="true" />
-                {check.status}
+              <span className="system-health-states">
+                <span className={`system-health-status status-${heartbeat}`}>
+                  <span className="system-health-dot" aria-hidden="true" />
+                  {heartbeat}
+                </span>
+                <span className={`system-health-readiness status-${check.status}`}>
+                  {check.status}
+                </span>
               </span>
             </li>
-          ))
+            );
+          })
         ) : (
           <li className="system-health-message">
             {error ?? "Loading system health…"}

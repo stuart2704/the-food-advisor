@@ -184,11 +184,42 @@
   font-weight: 500;
 }
 
+.system-health-states {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.system-health-readiness {
+  color: #929292;
+  font-size: 10px;
+  font-weight: 600;
+}
+
 .system-health-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: #666;
+}
+
+.system-health-status.status-online,
+.system-health-readiness.status-healthy {
+  color: #83d69b;
+}
+
+.system-health-status.status-online .system-health-dot {
+  background: #45b96a;
+}
+
+.system-health-status.status-offline,
+.system-health-readiness.status-error {
+  color: #ff8b82;
+}
+
+.system-health-status.status-offline .system-health-dot {
+  background: #e85149;
 }
 
 .system-health-status.status-healthy {

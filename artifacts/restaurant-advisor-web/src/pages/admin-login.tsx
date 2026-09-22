@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../styles/admin-login.css';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -48,26 +49,8 @@ export default function AdminLogin() {
   }
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        display: 'grid',
-        placeItems: 'center',
-        padding: '48px 24px',
-        background: '#fffaf7',
-        color: '#1d1d1d',
-      }}
-    >
-      <section
-        style={{
-          width: 'min(420px, 100%)',
-          padding: '32px',
-          border: '1px solid #eaded7',
-          borderRadius: '24px',
-          background: '#fff',
-          boxShadow: '0 18px 50px rgba(78, 36, 10, 0.12)',
-        }}
-      >
+    <main className="admin-login-page">
+      <section className="login-page">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
           <span
             aria-hidden="true"
@@ -101,7 +84,6 @@ export default function AdminLogin() {
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', border: '1px solid #cfc3bc', borderRadius: '10px', font: 'inherit' }}
             />
           </label>
           <label style={{ display: 'grid', gap: '8px', fontWeight: 700 }}>
@@ -112,7 +94,6 @@ export default function AdminLogin() {
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', border: '1px solid #cfc3bc', borderRadius: '10px', font: 'inherit' }}
             />
           </label>
 
@@ -125,7 +106,6 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={submitting}
-            style={{ width: '100%', padding: '13px 18px', border: 0, borderRadius: '10px', background: '#d94800', color: '#fff', font: 'inherit', fontWeight: 800, cursor: submitting ? 'wait' : 'pointer', opacity: submitting ? 0.65 : 1 }}
           >
             {submitting ? 'Signing in…' : 'Sign In'}
           </button>
