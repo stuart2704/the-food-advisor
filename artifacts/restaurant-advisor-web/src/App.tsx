@@ -6,7 +6,7 @@ import Trending from "./components/Trending";
 import Home from "./components/Home";
 import CityGuide from "./components/CityGuide";
 import AdminLogin from "./admin/AdminLogin";
-import AdminDashboard from "./pages/admin/dashboard";
+import AdminDashboard from "./admin/AdminDashboard";
 import AdminErrors from "./pages/admin/errors";
 import AdminLogs from "./pages/admin/logs";
 import AdminLogout from "./pages/admin/logout";
