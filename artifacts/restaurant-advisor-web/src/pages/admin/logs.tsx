@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AdminLayout } from "../components/admin/AdminLayout";
-import { LiveEvents } from "../components/live-events";
-import "./live-events.css";
+import { AdminLayout } from "../../components/admin/AdminLayout";
+import LogViewer from "../../components/log-viewer/LogViewer";
+import "../live-events.css";
 
 export default function AdminLogs() {
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ export default function AdminLogs() {
         Sanitized process-local events. The feed refreshes every three seconds
         and resets when the API process restarts.
       </p>
-      <LiveEvents />
+      <LogViewer />
     </AdminLayout>
   );
 }

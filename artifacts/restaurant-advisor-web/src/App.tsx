@@ -6,7 +6,7 @@ import Trending from "./components/Trending";
 import Home from "./components/Home";
 import CityGuide from "./components/CityGuide";
 import AdminLogin from "./pages/admin-login";
-import AdminLogs from "./pages/AdminLogs";
+import AdminLogs from "./pages/admin/logs";
 
 function AppRoutes() {
   const location = useLocation();
