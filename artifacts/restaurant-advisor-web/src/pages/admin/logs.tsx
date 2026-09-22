@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import LogViewer from "../../components/log-viewer/LogViewer";
-import "../live-events.css";
+import "../../styles/log-viewer.css";
 
 export default function AdminLogs() {
   const navigate = useNavigate();

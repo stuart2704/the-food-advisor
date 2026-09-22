@@ -153,7 +153,37 @@ function LogGroupView({ group }: { group: LogGroup }) {
 
 export default function LogViewer() {
   const { events, loading, error } = useLogStream();
-  const groups = useMemo(() => groupLogs(events), [events]);
+  const [engineFilter, setEngineFilter] = useState("all");
+  const [severityFilter, setSeverityFilter] = useState<Severity | "all">("all");
+  const [search, setSearch] = useState("");
+  const engines = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          events.map(
+            (event) => event.category?.trim() || event.type.trim() || "system"
+          )
+        )
+      ).sort((a, b) => a.localeCompare(b)),
+    [events]
+  );
+  const filteredEvents = useMemo(() => {
+    const query = search.trim().toLocaleLowerCase();
+    return events.filter((event) => {
+      const engine = event.category?.trim() || event.type.trim() || "system";
+      const severity = toSeverity(event.type);
+      const matchesEngine = engineFilter === "all" || engine === engineFilter;
+      const matchesSeverity =
+        severityFilter === "all" || severity === severityFilter;
+      const matchesSearch =
+        !query ||
+        event.message.toLocaleLowerCase().includes(query) ||
+        event.type.toLocaleLowerCase().includes(query) ||
+        event.category?.toLocaleLowerCase().includes(query);
+      return matchesEngine && matchesSeverity && matchesSearch;
+    });
+  }, [engineFilter, events, search, severityFilter]);
+  const groups = useMemo(() => groupLogs(filteredEvents), [filteredEvents]);
 
   return (
     <>
@@ -162,6 +192,45 @@ export default function LogViewer() {
           {error}
         </p>
       )}
+      <div className="log-filters" aria-label="Log filters">
+        <label>
+          <span>Engine</span>
+          <select
+            value={engineFilter}
+            onChange={(event) => setEngineFilter(event.target.value)}
+          >
+            <option value="all">All engines</option>
+            {engines.map((engine) => (
+              <option key={engine} value={engine}>
+                {engine}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>Severity</span>
+          <select
+            value={severityFilter}
+            onChange={(event) =>
+              setSeverityFilter(event.target.value as Severity | "all")
+            }
+          >
+            <option value="all">All severities</option>
+            <option value="info">Info</option>
+            <option value="warn">Warning</option>
+            <option value="error">Error</option>
+          </select>
+        </label>
+        <label className="log-search-filter">
+          <span>Search</span>
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search messages"
+          />
+        </label>
+      </div>
       <div
         id="events"
         className="events-box"
@@ -173,6 +242,8 @@ export default function LogViewer() {
           <p>Loading events…</p>
         ) : events.length === 0 ? (
           <p>{error ? "Event feed unavailable." : "No events recorded yet."}</p>
+        ) : filteredEvents.length === 0 ? (
+          <p>No events match the selected filters.</p>
         ) : (
           groups.map((group) => (
             <LogGroupView key={group.key} group={group} />
