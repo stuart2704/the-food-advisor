@@ -8,8 +8,10 @@ import {
   arrayContains,
   desc,
   eq,
+  gte,
   inArray,
   lt,
+  sql,
 } from "drizzle-orm";
 
 export interface SanitizedOperationalEvent {
@@ -173,4 +175,55 @@ export async function cleanupOperationalEvents(): Promise<number> {
     .where(lt(operationalLogEventsTable.createdAt, cutoff))
     .returning({ id: operationalLogEventsTable.id });
   return rows.length;
+}
+
+export interface OperationalMetrics {
+  ai_requests_last_minute: number;
+  automation_tasks_last_minute: number;
+  queue_jobs_last_minute: number;
+  api_calls_last_minute: number;
+  db_queries_last_minute: number;
+}
+
+export async function getOperationalMetrics(): Promise<OperationalMetrics> {
+  const since = new Date(Date.now() - 60_000);
+  const rows = await db
+    .select({
+      type: operationalLogEventsTable.type,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(operationalLogEventsTable)
+    .where(gte(operationalLogEventsTable.createdAt, since))
+    .groupBy(operationalLogEventsTable.type);
+
+  const metrics: OperationalMetrics = {
+    ai_requests_last_minute: 0,
+    automation_tasks_last_minute: 0,
+    queue_jobs_last_minute: 0,
+    api_calls_last_minute: 0,
+    db_queries_last_minute: 0,
+  };
+
+  for (const row of rows) {
+    const count = Number(row.count);
+    if (!Number.isFinite(count)) continue;
+    switch (row.type) {
+      case "ai":
+        metrics.ai_requests_last_minute = count;
+        break;
+      case "automation":
+        metrics.automation_tasks_last_minute = count;
+        break;
+      case "queue":
+        metrics.queue_jobs_last_minute = count;
+        break;
+      case "api":
+        metrics.api_calls_last_minute = count;
+        break;
+      case "database":
+        metrics.db_queries_last_minute = count;
+        break;
+    }
+  }
+  return metrics;
 }
