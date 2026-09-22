@@ -227,3 +227,60 @@ export async function getOperationalMetrics(): Promise<OperationalMetrics> {
   }
   return metrics;
 }
+
+export interface EnginePerformanceMetric {
+  total: number;
+  errors: number;
+  successes: number;
+  error_rate: number;
+  success_rate: number;
+  avg_latency_ms: null;
+}
+
+export type EnginePerformanceMetrics = Record<
+  string,
+  EnginePerformanceMetric
+>;
+
+export async function getEnginePerformanceMetrics(): Promise<
+  EnginePerformanceMetrics
+> {
+  const since = new Date(Date.now() - 5 * 60_000);
+  const rows = await db
+    .select({
+      engine: operationalLogEventsTable.type,
+      total: sql<number>`count(*)::int`,
+      errors: sql<number>`
+        count(*) filter (
+          where ${operationalLogEventsTable.category} = 'error'
+        )::int
+      `,
+      successes: sql<number>`
+        count(*) filter (
+          where ${operationalLogEventsTable.category} in ('info', 'success')
+        )::int
+      `,
+    })
+    .from(operationalLogEventsTable)
+    .where(gte(operationalLogEventsTable.createdAt, since))
+    .groupBy(operationalLogEventsTable.type);
+
+  return Object.fromEntries(
+    rows.map((row) => {
+      const total = Number(row.total);
+      const errors = Number(row.errors);
+      const successes = Number(row.successes);
+      return [
+        row.engine,
+        {
+          total,
+          errors,
+          successes,
+          error_rate: total > 0 ? errors / total : 0,
+          success_rate: total > 0 ? successes / total : 0,
+          avg_latency_ms: null,
+        },
+      ];
+    }),
+  );
+}

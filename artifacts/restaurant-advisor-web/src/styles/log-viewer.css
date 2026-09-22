@@ -95,6 +95,122 @@
     grid-template-columns: 1fr;
   }
 }
+
+.performance-panel {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #2c2c2c;
+  border-radius: 12px;
+  background: #171717;
+}
+
+.performance-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.performance-panel-eyebrow {
+  margin: 0 0 4px;
+  color: #ff8b47;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.performance-panel h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.performance-panel-window {
+  color: #a8a8a8;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.performance-panel ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.performance-panel li {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #303030;
+  border-radius: 9px;
+  background: #202020;
+}
+
+.performance-panel li > strong {
+  color: #f4f4f4;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+.performance-panel dl {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0 0;
+}
+
+.performance-panel dl div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.performance-panel dt,
+.performance-panel dd {
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+.performance-panel dt {
+  color: #999;
+}
+
+.performance-panel dd {
+  color: #eee;
+  font-variant-numeric: tabular-nums;
+}
+
+.performance-panel .performance-panel-empty {
+  grid-column: 1 / -1;
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+.performance-panel-status {
+  margin: 12px 0 0;
+  color: #888;
+  font-size: 0.78rem;
+}
+
+.performance-panel-status.has-error {
+  color: #ff9b8d;
+}
+
+@media (max-width: 520px) {
+  .performance-panel {
+    padding: 16px;
+  }
+
+  .performance-panel-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
 .events-box {
   background: #111;
   color: #eee;

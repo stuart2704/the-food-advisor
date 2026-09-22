@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import MetricsPanel from "../../components/admin/MetricsPanel";
+import PerformancePanel from "../../components/admin/PerformancePanel";
 import { SystemHealth } from "../../components/admin/SystemHealth";
 import LogViewer from "../../components/log-viewer/LogViewer";
 import "../../styles/log-viewer.css";
@@ -85,11 +86,12 @@ export default function AdminLogs() {
         </button>
       </header>
       <p style={{ color: "#aaa", marginBottom: "16px" }}>
-        Sanitized process-local events. The feed refreshes every three seconds
-        and resets when the API process restarts.
+        Sanitized operational events retained for seven days. The feed refreshes
+        every three seconds.
       </p>
       <SystemHealth />
       <MetricsPanel />
+      <PerformancePanel />
       <LogViewer />
     </AdminLayout>
   );
